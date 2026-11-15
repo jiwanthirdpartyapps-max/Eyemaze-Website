@@ -65,14 +65,14 @@ export const BrandStripAndTags: React.FC = () => {
             ))}
           </div>
 
-          <p className="text-[11px] text-slate-400 dark:text-slate-500">
+          <p className="text-[11px] text-slate-600 dark:text-slate-400">
             Logos are trademarks of their respective owners and do not imply partnership or endorsement.
           </p>
         </div>
 
         {/* Popular Countries / Print Formats Pill Grid */}
         <div className="text-center space-y-8 pt-6">
-          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-600 dark:text-rose-400">
+          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-700 dark:text-rose-400">
             Worldwide & Nationwide
           </div>
 

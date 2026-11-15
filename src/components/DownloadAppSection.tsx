@@ -61,9 +61,11 @@ export const DownloadAppSection: React.FC = () => {
               </div>
 
               <div className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 flex items-center gap-3 cursor-pointer transition-colors">
-                <span className="text-xl"></span>
+                <svg className="w-5 h-5 fill-white shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.96 6.32c.68-.83 1.14-1.98 1.01-3.13-.98.04-2.16.65-2.86 1.48-.62.72-1.17 1.89-1.02 3.01 1.09.08 2.19-.54 2.87-1.36" />
+                </svg>
                 <div className="text-left">
-                  <p className="text-[9px] uppercase tracking-wider text-slate-400 leading-none">Download on the</p>
+                  <p className="text-[9px] uppercase tracking-wider text-slate-300 leading-none">Download on the</p>
                   <p className="text-xs font-bold text-white leading-tight">App Store</p>
                 </div>
               </div>
@@ -82,8 +84,8 @@ export const DownloadAppSection: React.FC = () => {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] text-slate-400">Welcome,</p>
-                  <h3 className="font-display font-bold text-sm">Eyemaze Press Mobile</h3>
+                  <p className="text-[10px] text-slate-300">Welcome,</p>
+                  <p className="font-display font-bold text-sm">Eyemaze Press Mobile</p>
                 </div>
                 <span className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center font-bold text-xs">
                   E
@@ -91,10 +93,10 @@ export const DownloadAppSection: React.FC = () => {
               </div>
 
               {/* Status Banner */}
-              <div className="rounded-2xl p-3.5 bg-gradient-to-r from-rose-600 to-orange-600 space-y-1">
-                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-90">Live Press Status</p>
+              <div className="rounded-2xl p-3.5 bg-gradient-to-r from-rose-700 to-orange-700 space-y-1">
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-95">Live Press Status</p>
                 <p className="font-display font-extrabold text-lg">Order #EYM-4082</p>
-                <p className="text-xs opacity-90">1,000 Foil Cards · Heidelberg Speedmaster</p>
+                <p className="text-xs opacity-95">1,000 Foil Cards · Heidelberg Speedmaster</p>
               </div>
 
               {/* Step Timeline */}
@@ -109,11 +111,11 @@ export const DownloadAppSection: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping" />
-                  <span className="text-rose-400 font-semibold">Running CMYK Offset Inks</span>
+                  <span className="text-rose-300 font-semibold">Running CMYK Offset Inks</span>
                 </div>
-                <div className="flex items-center gap-2.5 opacity-50">
-                  <span className="w-2.5 h-2.5 rounded-full bg-slate-600" />
-                  <span className="text-slate-400">Hot Foil Stamping & Cutting</span>
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
+                  <span className="text-slate-300">Hot Foil Stamping & Cutting</span>
                 </div>
               </div>
             </div>

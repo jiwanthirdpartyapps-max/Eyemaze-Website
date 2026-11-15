@@ -117,28 +117,28 @@ export const PrintPortalDashboard: React.FC<PrintPortalDashboardProps> = ({
     switch (status) {
       case 'In Press':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400">
             <Printer className="w-3.5 h-3.5" />
             In Press
           </span>
         );
       case 'Proof Review':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
             <Clock className="w-3.5 h-3.5" />
             Proof Review
           </span>
         );
       case 'Dispatched':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-700 dark:text-sky-400">
             <Truck className="w-3.5 h-3.5" />
             Dispatched
           </span>
         );
       case 'Completed':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
             <CheckCircle2 className="w-3.5 h-3.5" />
             Completed
           </span>
@@ -152,7 +152,7 @@ export const PrintPortalDashboard: React.FC<PrintPortalDashboardProps> = ({
         {/* Section Heading */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-2 max-w-2xl">
-            <p className="text-sm font-semibold text-rose-600 dark:text-rose-400">
+            <p className="text-sm font-semibold text-rose-700 dark:text-rose-400">
               Client Print Portal & Estimator
             </p>
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">

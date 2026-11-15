@@ -50,7 +50,7 @@ export const EverythingInOneSection: React.FC<EverythingInOneSectionProps> = ({ 
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Section Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-600 dark:text-rose-400">
+          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-700 dark:text-rose-400">
             One Portal
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -88,7 +88,7 @@ export const EverythingInOneSection: React.FC<EverythingInOneSectionProps> = ({ 
                 <button
                   type="button"
                   onClick={() => onSelectCategory(card.category)}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 group-hover:text-orange-500 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-400 group-hover:text-orange-700 transition-colors cursor-pointer"
                 >
                   <span>Learn more</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -96,7 +96,7 @@ export const EverythingInOneSection: React.FC<EverythingInOneSectionProps> = ({ 
               ) : (
                 <a
                   href="#portal"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 group-hover:text-orange-500 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-400 group-hover:text-orange-700 transition-colors"
                 >
                   <span>Learn more</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

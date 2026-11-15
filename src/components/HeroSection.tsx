@@ -112,7 +112,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 type="button"
                 onClick={onJumpToPortal}
-                className="px-8 py-3.5 rounded-full text-sm font-bold uppercase tracking-wider text-white bg-[#E83E8C] hover:bg-[#d42d7a] transition-colors shadow-lg shadow-pink-600/30 flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                className="px-8 py-3.5 rounded-full text-sm font-bold uppercase tracking-wider text-white bg-[#C81E6E] hover:bg-[#A6165A] transition-colors shadow-lg shadow-pink-600/30 flex items-center gap-2 cursor-pointer whitespace-nowrap"
               >
                 <span>GET STARTED</span>
                 <ArrowRight className="w-4 h-4" />
@@ -121,7 +121,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 type="button"
                 onClick={onOpenVideoModal}
-                className="px-7 py-3.5 rounded-full text-sm font-bold uppercase tracking-wider text-white bg-[#FF5B14] hover:bg-[#e04b08] transition-colors shadow-lg shadow-orange-600/30 flex items-center gap-2.5 cursor-pointer whitespace-nowrap"
+                className="px-7 py-3.5 rounded-full text-sm font-bold uppercase tracking-wider text-white bg-[#C2410C] hover:bg-[#9A3412] transition-colors shadow-lg shadow-orange-600/30 flex items-center gap-2.5 cursor-pointer whitespace-nowrap"
               >
                 <Play className="w-4 h-4 fill-white" />
                 <span>PLAY VIDEO</span>
@@ -219,7 +219,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                       E
                     </span>
                     <div>
-                      <p className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Hello,</p>
+                      <p className="text-[9px] text-slate-600 uppercase font-bold tracking-wider">Hello,</p>
                       <p className="text-xs font-extrabold text-slate-900">Eyemaze</p>
                     </div>
                   </div>
@@ -306,13 +306,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   {/* Recent Activity (Payowire Exact) */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
                         RECENT ACTIVITY
                       </p>
                       <button
                         type="button"
                         onClick={onJumpToPortal}
-                        className="text-[10px] font-bold text-rose-600 hover:underline cursor-pointer"
+                        className="text-[10px] font-bold text-rose-700 hover:underline cursor-pointer"
                       >
                         View all
                       </button>
@@ -321,27 +321,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     <div className="space-y-1.5">
                       <div className="bg-white rounded-xl p-2.5 border border-slate-200/80 flex items-center justify-between gap-2 shadow-2xs">
                         <div className="flex items-center gap-2.5">
-                          <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+                          <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
                             ↓
                           </span>
                           <div>
                             <p className="text-xs font-bold text-slate-900">Client Payout</p>
-                            <p className="text-[10px] text-slate-500">Today · Offset Batch #4082</p>
+                            <p className="text-[10px] text-slate-600">Today · Offset Batch #4082</p>
                           </div>
                         </div>
-                        <span className="text-xs font-mono font-bold text-emerald-600">
+                        <span className="text-xs font-mono font-bold text-emerald-700">
                           +NPR 28,500
                         </span>
                       </div>
 
                       <div className="bg-white rounded-xl p-2.5 border border-slate-200/80 flex items-center justify-between gap-2 shadow-2xs">
                         <div className="flex items-center gap-2.5">
-                          <span className="w-7 h-7 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold">
+                          <span className="w-7 h-7 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-xs font-bold">
                             ✓
                           </span>
                           <div>
                             <p className="text-xs font-bold text-slate-900">Visiting Cards Approved</p>
-                            <p className="text-[10px] text-slate-500">Yesterday · 350 GSM Gold Foil</p>
+                            <p className="text-[10px] text-slate-600">Yesterday · 350 GSM Gold Foil</p>
                           </div>
                         </div>
                         <span className="text-xs font-mono font-bold text-slate-700">
@@ -353,28 +353,29 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
 
                 {/* 5-Item Bottom App Navigation (Payowire Signature) */}
-                <div className="grid grid-cols-5 bg-white border-t border-slate-200 py-2 px-2 text-center text-slate-400">
-                  <button type="button" onClick={onJumpToPortal} className="flex flex-col items-center gap-0.5 text-rose-600">
+                <div className="grid grid-cols-5 bg-white border-t border-slate-200 py-2 px-2 text-center text-slate-600">
+                  <button type="button" onClick={onJumpToPortal} className="flex flex-col items-center gap-0.5 text-rose-700">
                     <Home className="w-3.5 h-3.5" />
                     <span className="text-[9px] font-bold">Home</span>
                   </button>
-                  <button type="button" onClick={onJumpToPortal} className="flex flex-col items-center gap-0.5 hover:text-slate-800">
+                  <button type="button" onClick={onJumpToPortal} className="flex flex-col items-center gap-0.5 hover:text-slate-900">
                     <CreditCard className="w-3.5 h-3.5" />
                     <span className="text-[9px] font-semibold">Cards</span>
                   </button>
                   {/* Central floating send/order button */}
                   <button
                     type="button"
+                    aria-label="Open print order portal"
                     onClick={onJumpToPortal}
                     className="w-9 h-9 -mt-3.5 rounded-full brand-gradient text-white flex items-center justify-center shadow-md mx-auto"
                   >
                     <ArrowRight className="w-4 h-4 -rotate-45" />
                   </button>
-                  <button type="button" onClick={onJumpToPortal} className="flex flex-col items-center gap-0.5 hover:text-slate-800">
+                  <button type="button" onClick={onJumpToPortal} className="flex flex-col items-center gap-0.5 hover:text-slate-900">
                     <Clock className="w-3.5 h-3.5" />
                     <span className="text-[9px] font-semibold">Activity</span>
                   </button>
-                  <button type="button" onClick={onOpenAiAdvisor} className="flex flex-col items-center gap-0.5 hover:text-slate-800">
+                  <button type="button" onClick={onOpenAiAdvisor} className="flex flex-col items-center gap-0.5 hover:text-slate-900">
                     <User className="w-3.5 h-3.5" />
                     <span className="text-[9px] font-semibold">Profile</span>
                   </button>

@@ -112,6 +112,7 @@ export const FeaturedStrip: React.FC<FeaturedStripProps> = ({ onSelectCategory }
 
   return (
     <section aria-label="Core Capabilities" className="relative z-30 -mt-20 px-6">
+      <h2 className="sr-only">Core Print & Design Capabilities</h2>
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {cards.map((card) => (
           <div
@@ -126,7 +127,7 @@ export const FeaturedStrip: React.FC<FeaturedStripProps> = ({ onSelectCategory }
               <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white leading-snug">
                 {card.title}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mx-auto">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-xs mx-auto">
                 {card.desc}
               </p>
             </div>
@@ -135,7 +136,7 @@ export const FeaturedStrip: React.FC<FeaturedStripProps> = ({ onSelectCategory }
               <button
                 type="button"
                 onClick={() => onSelectCategory(card.category)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 group-hover:text-orange-500 transition-colors cursor-pointer pt-1"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-400 group-hover:text-orange-700 transition-colors cursor-pointer pt-1"
               >
                 <span>Instant estimate</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -143,7 +144,7 @@ export const FeaturedStrip: React.FC<FeaturedStripProps> = ({ onSelectCategory }
             ) : (
               <a
                 href="#portal"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 group-hover:text-orange-500 transition-colors cursor-pointer pt-1"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-400 group-hover:text-orange-700 transition-colors cursor-pointer pt-1"
               >
                 <span>Instant estimate</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

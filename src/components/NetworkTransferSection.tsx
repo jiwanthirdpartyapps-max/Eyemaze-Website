@@ -31,7 +31,7 @@ export const NetworkTransferSection: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Section Header */}
         <div className="space-y-3">
-          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-600 dark:text-rose-400">
+          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-700 dark:text-rose-400">
             Delivery Networks
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -149,7 +149,7 @@ export const NetworkTransferSection: React.FC = () => {
                     1,000 Offset Catalogs
                   </p>
                 </div>
-                <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
+                <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300 px-2 py-0.5 rounded-full">
                   <CheckCircle2 className="w-3 h-3" />
                   Received
                 </span>
@@ -158,7 +158,7 @@ export const NetworkTransferSection: React.FC = () => {
               {/* Direct Studio Map Anchor */}
               <a
                 href="#location-map"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-rose-200 dark:border-slate-700 shadow-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-slate-700 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-rose-200 dark:border-slate-700 shadow-sm text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-slate-700 transition-colors"
               >
                 <Globe2 className="w-3.5 h-3.5 text-rose-500" />
                 <span>मरिण–६, छाप Google Map →</span>

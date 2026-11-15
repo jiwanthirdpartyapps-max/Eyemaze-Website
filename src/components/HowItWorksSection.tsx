@@ -35,7 +35,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onOpenPort
       <div className="max-w-6xl mx-auto text-center space-y-16">
         {/* Header */}
         <div className="space-y-4">
-          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-600 dark:text-rose-400">
+          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-700 dark:text-rose-400">
             How It Works
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">

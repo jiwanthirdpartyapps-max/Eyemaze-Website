@@ -62,7 +62,7 @@ export const SecurityVerifySection: React.FC<SecurityVerifySectionProps> = ({ on
       <div className="max-w-7xl mx-auto space-y-14">
         {/* Section Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-600 dark:text-rose-400">
+          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-700 dark:text-rose-400">
             Security
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -117,7 +117,7 @@ export const SecurityVerifySection: React.FC<SecurityVerifySectionProps> = ({ on
                 <button
                   type="button"
                   onClick={onOpenSecurityModal}
-                  className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+                  className="text-xs font-bold text-rose-700 dark:text-rose-400 hover:underline cursor-pointer"
                 >
                   Inspect Audit
                 </button>

@@ -59,7 +59,7 @@ export const PowerFlexSection: React.FC<PowerFlexSectionProps> = ({ onOpenPortal
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Section Heading */}
         <div className="space-y-3">
-          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-600 dark:text-rose-400">
+          <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-700 dark:text-rose-400">
             Flexibility
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -102,25 +102,25 @@ export const PowerFlexSection: React.FC<PowerFlexSectionProps> = ({ onOpenPortal
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-xs">
+                  <div className="w-7 h-7 rounded-full bg-rose-700 text-white font-bold flex items-center justify-center text-xs">
                     EM
                   </div>
                   <div>
-                    <p className="text-[10px] text-slate-400">Hello,</p>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-400">Hello,</p>
                     <p className="text-xs font-bold text-slate-900 dark:text-white">Eyemaze Portal</p>
                   </div>
                 </div>
 
                 {/* Available Balance Card */}
-                <div className="rounded-2xl p-4 bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md space-y-1">
-                  <p className="text-[10px] opacity-90">Available balance</p>
+                <div className="rounded-2xl p-4 bg-gradient-to-r from-rose-700 to-orange-700 text-white shadow-md space-y-1">
+                  <p className="text-[10px] opacity-95">Available balance</p>
                   <p className="font-display font-extrabold text-2xl">NPR 25,000</p>
-                  <p className="text-[9px] opacity-80 font-mono">Visa •••• 4821</p>
+                  <p className="text-[9px] opacity-90 font-mono">Visa •••• 4821</p>
                 </div>
 
                 {/* Recent Transactions */}
                 <div className="space-y-2 pt-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                     Recent transactions
                   </p>
                   <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-800/60 p-2 rounded-xl">
@@ -130,10 +130,10 @@ export const PowerFlexSection: React.FC<PowerFlexSectionProps> = ({ onOpenPortal
                       </div>
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white">Visiting Cards</p>
-                        <p className="text-[9px] text-slate-400">Yesterday</p>
+                        <p className="text-[9px] text-slate-600 dark:text-slate-400">Yesterday</p>
                       </div>
                     </div>
-                    <span className="font-mono text-rose-600 font-semibold">-NPR 4,200</span>
+                    <span className="font-mono text-rose-700 dark:text-rose-400 font-semibold">-NPR 4,200</span>
                   </div>
 
                   <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-800/60 p-2 rounded-xl">
@@ -143,10 +143,10 @@ export const PowerFlexSection: React.FC<PowerFlexSectionProps> = ({ onOpenPortal
                       </div>
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white">Credit Top Up</p>
-                        <p className="text-[9px] text-slate-400">Monday</p>
+                        <p className="text-[9px] text-slate-600 dark:text-slate-400">Monday</p>
                       </div>
                     </div>
-                    <span className="font-mono text-emerald-600 font-semibold">+NPR 25,000</span>
+                    <span className="font-mono text-emerald-700 dark:text-emerald-400 font-semibold">+NPR 25,000</span>
                   </div>
                 </div>
               </div>

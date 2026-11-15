@@ -48,7 +48,7 @@ export const WhyChooseSection: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between">
-                <h3 className="font-display font-bold text-base">Wallet</h3>
+                <p className="font-display font-bold text-base">Wallet</p>
                 <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">+</span>
               </div>
 
@@ -80,7 +80,7 @@ export const WhyChooseSection: React.FC = () => {
 
               {/* Ready Indicator */}
               <div className="text-center pt-2">
-                <p className="text-[11px] text-slate-400">Hold near press terminal to confirm order</p>
+                <p className="text-[11px] text-slate-300">Hold near press terminal to confirm order</p>
               </div>
             </div>
           </div>
@@ -89,7 +89,7 @@ export const WhyChooseSection: React.FC = () => {
         {/* Right Side: 4 Benefit Cards */}
         <div className="lg:col-span-7 space-y-8">
           <div className="space-y-3">
-            <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-600 dark:text-rose-400">
+            <div className="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-pink-100 dark:bg-pink-950/50 text-rose-700 dark:text-rose-400">
               Why Eyemaze
             </div>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
