@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { Menu, X, Sun, Moon, ShieldCheck, ChevronDown, User, LayoutDashboard } from 'lucide-react';
-import type { UserProfile } from '../utils/dashboardLogic';
+import { Menu, X, Sun, Moon, ShieldCheck, ChevronDown, User, LayoutDashboard, Database } from 'lucide-react';
+import { getUserInitials, type UserProfile } from '../utils/dashboardLogic';
 
 interface NavbarProps {
   onOpenOrderPortal: () => void;
   onOpenLogin: () => void;
   isLoggedIn: boolean;
-  user?: UserProfile;
+  user?: UserProfile | null;
   onGoToDashboard: () => void;
   isDark: boolean;
   onToggleTheme: () => void;
   onOpenSecurity: () => void;
   onSelectCategory?: (category: string) => void;
+  onOpenFirebaseHub?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -24,6 +25,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleTheme,
   onOpenSecurity,
   onSelectCategory,
+  onOpenFirebaseHub,
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesDropdown, setServicesDropdown] = useState(false);
@@ -181,6 +183,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             <ShieldCheck className="w-4 h-4" />
           </button>
 
+          {/* Phase 0-6 Firebase & System Audit Hub Trigger */}
+          {onOpenFirebaseHub && (
+            <button
+              type="button"
+              onClick={onOpenFirebaseHub}
+              aria-label="View Firebase & Android architecture audit (Phase 0-6)"
+              title="System Audit & Migration Hub (Phase 0–6)"
+              className="p-2 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition-colors cursor-pointer flex items-center justify-center shadow-sm"
+            >
+              <Database className="w-4 h-4" />
+            </button>
+          )}
+
           {/* Theme Toggle */}
           <button
             type="button"
@@ -192,15 +207,24 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* If Logged in, show Dashboard shortcut pill, otherwise show Log in */}
-          {isLoggedIn ? (
+          {isLoggedIn && user ? (
             <button
               type="button"
               onClick={onGoToDashboard}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-slate-800 hover:bg-slate-750 border border-slate-700 transition-colors shadow-md cursor-pointer"
             >
-              <div className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center text-[10px] font-bold">
-                JM
-              </div>
+              {user.photoUrl ? (
+                <img
+                  src={user.photoUrl}
+                  alt={user.name}
+                  referrerPolicy="no-referrer"
+                  className="w-5 h-5 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center text-[10px] font-bold">
+                  {getUserInitials(user.name, user.email)}
+                </div>
+              )}
               <span className="hidden sm:inline">Dashboard</span>
             </button>
           ) : (

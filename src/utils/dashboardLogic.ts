@@ -3,12 +3,14 @@ export interface UserProfile {
   name: string;
   email: string;
   accountId: string;
+  photoUrl?: string;
+  emailVerified?: boolean;
   balanceNpr: number;
   balanceUsd: number;
   isVerified: boolean;
   totalCards: number;
   bankAccounts: number;
-  role: 'client' | 'admin';
+  role: 'client' | 'admin' | 'cashier' | 'press_operator';
 }
 
 export interface WalletTransaction {
@@ -22,18 +24,78 @@ export interface WalletTransaction {
   status: 'Completed' | 'Pending' | 'Failed';
 }
 
-export const INITIAL_USER_PROFILE: UserProfile = {
-  id: 'usr_85050801',
-  name: 'Jiwan Kumar Majhi',
-  email: '4jsm.life@gmail.com',
-  accountId: '85050801',
-  balanceNpr: 124555,
-  balanceUsd: 0.0,
-  isVerified: false,
-  totalCards: 0,
-  bankAccounts: 0,
-  role: 'client',
-};
+export interface AuthUserInput {
+  uid: string;
+  displayName?: string | null;
+  email?: string | null;
+  photoURL?: string | null;
+  emailVerified?: boolean;
+}
+
+/**
+ * Generates a unique, deterministic 8-digit Account ID purely from a user's Firebase UID.
+ * Ensures every Google Sign-In / Sign-Up gets their own isolated Account ID with zero hardcoding.
+ */
+export function deriveAccountIdFromUid(uid: string): string {
+  const cleanUid = (uid || '').trim();
+  if (!cleanUid) return '10000000';
+  let hash = 2166136261;
+  for (let i = 0; i < cleanUid.length; i++) {
+    hash ^= cleanUid.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  const normalized = (Math.abs(hash) % 90000000) + 10000000;
+  return String(normalized);
+}
+
+/**
+ * Computes clean 1-2 letter initials from any authenticated user's display name or email.
+ */
+export function getUserInitials(name?: string | null, email?: string | null): string {
+  const cleanName = (name || '').trim();
+  if (cleanName) {
+    const parts = cleanName.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return cleanName.slice(0, 2).toUpperCase();
+  }
+  const cleanEmail = (email || '').trim();
+  if (cleanEmail) {
+    return cleanEmail.slice(0, 2).toUpperCase();
+  }
+  return 'U';
+}
+
+/**
+ * Maps an authenticated Firebase Google user + optional Firestore document into a strictly user-scoped UserProfile.
+ */
+export function buildUserProfileFromFirebaseAuth(
+  authUser: AuthUserInput,
+  firestoreDoc?: Partial<UserProfile> | null
+): UserProfile {
+  const safeEmail = (firestoreDoc?.email || authUser.email || '').trim().slice(0, 100);
+  const fallbackName = safeEmail ? safeEmail.split('@')[0] : 'Eyemaze Client';
+  const safeName = (firestoreDoc?.name || authUser.displayName || fallbackName).trim().slice(0, 100);
+  const balanceNpr = typeof firestoreDoc?.balanceNpr === 'number' && firestoreDoc.balanceNpr >= 0
+    ? firestoreDoc.balanceNpr
+    : 0;
+
+  return {
+    id: authUser.uid,
+    name: safeName,
+    email: safeEmail,
+    accountId: (firestoreDoc?.accountId || deriveAccountIdFromUid(authUser.uid)).slice(0, 32),
+    photoUrl: (firestoreDoc?.photoUrl || authUser.photoURL || '').slice(0, 512),
+    emailVerified: Boolean(authUser.emailVerified ?? firestoreDoc?.emailVerified),
+    balanceNpr,
+    balanceUsd: Math.round((balanceNpr / 133) * 100) / 100,
+    isVerified: Boolean(firestoreDoc?.isVerified),
+    totalCards: typeof firestoreDoc?.totalCards === 'number' ? firestoreDoc.totalCards : 0,
+    bankAccounts: typeof firestoreDoc?.bankAccounts === 'number' ? firestoreDoc.bankAccounts : 0,
+    role: firestoreDoc?.role || 'client',
+  };
+}
 
 export const INITIAL_TRANSACTIONS: WalletTransaction[] = [
   {

@@ -24,9 +24,13 @@ import {
   Copy,
   Check,
   Code2,
+  Database,
+  LogOut,
 } from 'lucide-react';
+import { FirebaseIntegrationHub } from './FirebaseIntegrationHub';
 import type { UserProfile, WalletTransaction } from '../utils/dashboardLogic';
 import {
+  getUserInitials,
   toggleUserVerification,
   addWalletFunds,
   formatCurrencyDisplay,
@@ -37,6 +41,7 @@ interface UserDashboardProps {
   user: UserProfile;
   onUpdateUser: (updated: UserProfile) => void;
   onExitToWebsite: () => void;
+  onSignOut: () => void;
   onOpenSecurity: () => void;
   isDark: boolean;
   onToggleTheme: () => void;
@@ -53,12 +58,14 @@ type DashboardTab =
   | 'airtime'
   | 'transactions'
   | 'settings'
-  | 'android-bridge';
+  | 'android-bridge'
+  | 'firebase-hub';
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({
   user,
   onUpdateUser,
   onExitToWebsite,
+  onSignOut,
   onOpenSecurity,
   isDark,
   onToggleTheme,
@@ -120,9 +127,84 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     setShowCreateCardModal(false);
   };
 
+const ANDROID_KOTLIN_SNIPPET = `// In your Android Studio project: MainActivity.kt
+package np.com.eyemaze.app
+
+import android.os.Bundle
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var webView: WebView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        webView = findViewById(R.id.webView)
+        webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
+        webView.settings.databaseEnabled = true
+        webView.webViewClient = WebViewClient()
+        webView.webChromeClient = WebChromeClient()
+
+        // Loads the exact Payowire / Eyemaze Dashboard:
+        webView.loadUrl("https://jj.4jsm-life.workers.dev/#dashboard")
+    }
+
+    override fun onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+}`;
+
   const handleCopyAndroidCode = () => {
+    navigator.clipboard?.writeText(ANDROID_KOTLIN_SNIPPET).catch(() => {});
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  // Interactive Transfer / Payment / Airtime / Bank linking state
+  const [transferRecipient, setTransferRecipient] = useState('Aeterna Press Settlement');
+  const [transferAmount, setTransferAmount] = useState('2500');
+  const [airtimePhone, setAirtimePhone] = useState('9841000000');
+  const [airtimeCarrier, setAirtimeCarrier] = useState('NTC');
+  const [bankName, setBankName] = useState('Nabil Bank Ltd.');
+  const [bankAccountNo, setBankAccountNo] = useState('');
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+
+  const handleTransferOrPayment = (e: React.FormEvent, label: string, category: string) => {
+    e.preventDefault();
+    const amount = parseFloat(transferAmount) || 0;
+    if (amount <= 0) return;
+
+    const newTx: WalletTransaction = {
+      id: `TXN-${Math.floor(1000 + Math.random() * 9000)}`,
+      title: label,
+      type: 'debit',
+      amountNpr: amount,
+      amountUsd: Math.round((amount / 133) * 100) / 100,
+      date: 'Just now',
+      category,
+      status: 'Completed',
+    };
+    setTransactions((prev) => [newTx, ...prev]);
+    setActionFeedback(`${label} (NPR ${amount.toLocaleString()}) recorded successfully.`);
+    setTimeout(() => setActionFeedback(null), 3500);
+  };
+
+  const handleLinkBank = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bankAccountNo.trim()) return;
+    onUpdateUser({ ...user, bankAccounts: user.bankAccounts + 1 });
+    setBankAccountNo('');
+    setActionFeedback(`Linked ${bankName} account to your Eyemaze Payowire wallet.`);
+    setTimeout(() => setActionFeedback(null), 3500);
   };
 
   return (
@@ -142,13 +224,22 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             </span>
           </div>
 
-          {/* User Profile Card (Jiwan Kumar Majhi) */}
+          {/* User Profile Card (Dynamic Authenticated User) */}
           <div className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-3">
             <div className="flex items-center gap-3">
               {/* Avatar with Camera Badge */}
-              <div className="relative">
+              <div className="relative shrink-0">
                 <div className="w-12 h-12 rounded-full bg-slate-900 border-2 border-orange-500 overflow-hidden flex items-center justify-center text-white font-bold text-base shadow-sm">
-                  <span>JM</span>
+                  {user.photoUrl ? (
+                    <img
+                      src={user.photoUrl}
+                      alt={user.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span>{getUserInitials(user.name, user.email)}</span>
+                  )}
                 </div>
                 <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-orange-500 text-white flex items-center justify-center text-[8px] shadow-sm">
                   <Camera className="w-2.5 h-2.5" />
@@ -210,6 +301,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               { id: 'airtime' as DashboardTab, label: 'Mobile Airtime', icon: <Smartphone className="w-4 h-4" />, color: 'text-green-500' },
               { id: 'transactions' as DashboardTab, label: 'Transactions', icon: <RotateCw className="w-4 h-4" />, color: 'text-rose-500' },
               { id: 'android-bridge' as DashboardTab, label: 'Android App Bridge', icon: <Code2 className="w-4 h-4" />, color: 'text-teal-500' },
+              { id: 'firebase-hub' as DashboardTab, label: 'System Audit & DB', icon: <Database className="w-4 h-4" />, color: 'text-amber-500' },
               { id: 'settings' as DashboardTab, label: 'Settings', icon: <Settings className="w-4 h-4" />, color: 'text-purple-500' },
             ].map((item) => (
               <button
@@ -235,8 +327,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           </nav>
         </div>
 
-        {/* Exit back to Website */}
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+        {/* Exit & Sign Out */}
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
           <button
             type="button"
             onClick={onExitToWebsite}
@@ -245,23 +337,36 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             <span>Back to Public Website</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </button>
+          <button
+            type="button"
+            onClick={onSignOut}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+          >
+            <span>Sign Out ({getUserInitials(user.name, user.email)})</span>
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
         </div>
       </aside>
 
       {/* 2. MAIN DASHBOARD CONTENT */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto space-y-6">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto space-y-6">
         {/* Top Header Bar */}
-        <header className="flex items-center justify-between gap-4">
+        <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={onExitToWebsite}
+              aria-label="Back to public website"
               className="md:hidden p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
             >
               ←
             </button>
             <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight capitalize">
-              {activeTab === 'android-bridge' ? 'Android Studio App Bridge' : activeTab.replace('-', ' ')}
+              {activeTab === 'android-bridge'
+                ? 'Android Studio App Bridge'
+                : activeTab === 'firebase-hub'
+                ? 'System Audit & Migration Hub (Phase 0–6)'
+                : activeTab.replace('-', ' ')}
             </h1>
           </div>
 
@@ -305,21 +410,65 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             {/* Notification Bell */}
             <button
               type="button"
+              aria-label="Notifications"
+              onClick={() => setActiveTab('transactions')}
               className="p-2.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-rose-600 transition-colors cursor-pointer relative shadow-2xs"
             >
               <Bell className="w-4 h-4" />
               <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-2 right-2 ring-2 ring-white dark:ring-slate-900" />
             </button>
 
-            {/* User Avatar Dropdown */}
-            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 py-1.5 px-3 rounded-full shadow-2xs cursor-pointer">
-              <div className="w-6 h-6 rounded-full bg-slate-900 text-white font-bold flex items-center justify-center text-[10px]">
-                JM
-              </div>
+            {/* User Avatar Button */}
+            <button
+              type="button"
+              aria-label="Open profile settings"
+              onClick={() => setActiveTab('settings')}
+              className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 py-1.5 px-3 rounded-full shadow-2xs cursor-pointer"
+            >
+              {user.photoUrl ? (
+                <img
+                  src={user.photoUrl}
+                  alt={user.name}
+                  referrerPolicy="no-referrer"
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-slate-900 text-white font-bold flex items-center justify-center text-[10px]">
+                  {getUserInitials(user.name, user.email)}
+                </div>
+              )}
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-            </div>
+            </button>
           </div>
         </header>
+
+        {/* Mobile Navigation Strip */}
+        <nav aria-label="Mobile Dashboard Navigation" className="flex md:hidden items-center gap-1.5 overflow-x-auto pb-1">
+          {[
+            { id: 'dashboard' as DashboardTab, label: 'Dashboard' },
+            { id: 'firebase-hub' as DashboardTab, label: 'System Audit & DB' },
+            { id: 'android-bridge' as DashboardTab, label: 'Android Bridge' },
+            { id: 'bank-account' as DashboardTab, label: 'Banks' },
+            { id: 'send-money' as DashboardTab, label: 'Send Money' },
+            { id: 'payment' as DashboardTab, label: 'Payment' },
+            { id: 'airtime' as DashboardTab, label: 'Airtime' },
+            { id: 'transactions' as DashboardTab, label: 'Transactions' },
+            { id: 'settings' as DashboardTab, label: 'Settings' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-[#FF5B14] text-white'
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
 
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
@@ -434,9 +583,11 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             {/* Bottom Row: 3 Feature Cards + Android App Connect Card */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Card 1: My Cards */}
-              <div
+              <button
+                type="button"
+                aria-label="My Cards"
                 onClick={() => setShowCreateCardModal(true)}
-                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-blue-300 transition-colors"
+                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-blue-300 transition-colors text-left"
               >
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center shrink-0">
                   <CreditCard className="w-6 h-6" />
@@ -447,12 +598,14 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   </p>
                   <p className="text-xs text-slate-500">My Cards</p>
                 </div>
-              </div>
+              </button>
 
               {/* Card 2: Settings */}
-              <div
+              <button
+                type="button"
+                aria-label="Settings Profile & security"
                 onClick={() => setActiveTab('settings')}
-                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-purple-300 transition-colors"
+                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-purple-300 transition-colors text-left"
               >
                 <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 flex items-center justify-center shrink-0">
                   <Settings className="w-6 h-6" />
@@ -461,14 +614,16 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   <p className="font-display font-bold text-sm text-slate-900 dark:text-white">
                     Settings
                   </p>
-                  <p className="text-xs text-slate-500">Profile & security</p>
+                  <p className="text-xs text-slate-500">Profile &amp; security</p>
                 </div>
-              </div>
+              </button>
 
               {/* Card 3: Android Studio Bridge */}
-              <div
+              <button
+                type="button"
+                aria-label="Android Studio Login clone & build"
                 onClick={() => setActiveTab('android-bridge')}
-                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-emerald-300 transition-colors"
+                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-emerald-300 transition-colors text-left"
               >
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center shrink-0">
                   <Code2 className="w-6 h-6" />
@@ -477,14 +632,16 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   <p className="font-display font-bold text-sm text-slate-900 dark:text-white">
                     Android Studio
                   </p>
-                  <p className="text-xs text-slate-500">Login clone & build</p>
+                  <p className="text-xs text-slate-500">Login clone &amp; build</p>
                 </div>
-              </div>
+              </button>
 
               {/* Card 4: Security Shield Audit */}
-              <div
+              <button
+                type="button"
+                aria-label="Banking Shield TLS 1.3 & AI Guard"
                 onClick={onOpenSecurity}
-                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-rose-300 transition-colors"
+                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-rose-300 transition-colors text-left"
               >
                 <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center shrink-0">
                   <ShieldCheck className="w-6 h-6" />
@@ -493,9 +650,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   <p className="font-display font-bold text-sm text-slate-900 dark:text-white">
                     Banking Shield
                   </p>
-                  <p className="text-xs text-slate-500">TLS 1.3 & AI Guard</p>
+                  <p className="text-xs text-slate-500">TLS 1.3 &amp; AI Guard</p>
                 </div>
-              </div>
+              </button>
             </div>
 
             {/* Recent Press Activity Table */}
@@ -587,7 +744,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                     <strong>विधि १ (सबैभन्दा सजिलो &amp; 100% Exact Clone): Android WebView / TWA</strong> — तपाईंको Android Studio को <code>MainActivity.kt</code> मा WebView राखेर यो Web App को URL load गरिदिनुहोस्। यसो गर्दा Web मा जे देखिन्छ, Android App भित्र पनि हुबहु 100% clone चल्छ र single session cookie मा login रहन्छ।
                   </li>
                   <li>
-                    <strong>विधि २ (Native Android UI): REST API Login</strong> — तपाईंको Android Studio को Login Screen बाट सिधै <code>POST /api/auth/login</code> मा Retrofit वा OkHttp बाट request पठाउनुहोस्। Server ले token र user data (Jiwan Kumar Majhi) फिर्ता गर्छ, जसलाई Android को <code>SharedPreferences</code> मा सेभ गरेर dashboard खोल्न सकिन्छ।
+                    <strong>विधि २ (Native Android UI): Firebase Auth ID Token Verification</strong> — तपाईंको Android Studio मा प्रयोगकर्ताले Google Sign-In गरेपछि <code>FirebaseAuth.getInstance().currentUser?.getIdToken(true)</code> बाट रियल ID Token प्राप्त गरी <code>POST /api/auth/verify</code> मा <code>Authorization: Bearer &lt;token&gt;</code> मार्फत पठाउनुहोस्। सर्भरले Google को पब्लिक x509 प्रमाणपत्रबाट टोकन जाँच गरी सोही प्रयोगकर्ताको मात्र वास्तविक प्रोफाइल र UID फिर्ता गर्छ।
                   </li>
                 </ol>
               </div>
@@ -609,74 +766,64 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 </div>
 
                 <div className="bg-slate-950 text-slate-200 p-4 rounded-2xl font-mono text-xs overflow-x-auto leading-relaxed border border-slate-800">
-                  <pre>{`// In your Android Studio project: MainActivity.kt
-package np.com.eyemaze.app
-
-import android.os.Bundle
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
-
-class MainActivity : AppCompatActivity() {
-    private lateinit var webView: WebView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        webView = findViewById(R.id.webView)
-        webView.settings.javaScriptEnabled = true
-        webView.settings.domStorageEnabled = true
-        webView.settings.databaseEnabled = true
-        webView.webViewClient = WebViewClient()
-        webView.webChromeClient = WebChromeClient()
-
-        // Loads the exact Payowire / Eyemaze Dashboard:
-        webView.loadUrl("https://jj.4jsm-life.workers.dev/#dashboard")
-    }
-
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
-        }
-    }
-}`}</pre>
+                  <pre>{ANDROID_KOTLIN_SNIPPET}</pre>
                 </div>
               </div>
 
               {/* Android REST API Specs */}
               <div className="space-y-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Native Android REST API Auth Endpoint
+                  Zero-Trust Firebase ID Token Verification Endpoint
                 </span>
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2 text-xs font-mono">
-                  <p className="text-emerald-600 font-bold">POST /api/auth/login</p>
-                  <p className="text-slate-500 dark:text-slate-400">Request Body:</p>
+                  <p className="text-emerald-600 font-bold">POST /api/auth/verify</p>
+                  <p className="text-slate-500 dark:text-slate-400">Request Headers:</p>
                   <pre className="p-2 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-{`{
-  "email": "4jsm.life@gmail.com",
-  "password": "your_secure_password"
-}`}
+{`Authorization: Bearer <FIREBASE_GOOGLE_ID_TOKEN>`}
                   </pre>
-                  <p className="text-slate-500 dark:text-slate-400">Response (200 OK):</p>
+                  <p className="text-slate-500 dark:text-slate-400">Response (200 OK — Dynamic Authenticated User):</p>
                   <pre className="p-2 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
 {`{
   "success": true,
   "user": {
-    "name": "Jiwan Kumar Majhi",
-    "email": "4jsm.life@gmail.com",
-    "accountId": "85050801",
-    "balanceNpr": 124555
-  },
-  "token": "jwt_eyemaze_NDpzbS5saWZl"
+    "uid": "${user.id}",
+    "name": "${user.name}",
+    "email": "${user.email}",
+    "accountId": "${user.accountId}",
+    "emailVerified": ${Boolean(user.emailVerified)}
+  }
 }`}
                   </pre>
                 </div>
               </div>
+
+              {/* Callout to Phase 0-6 Architecture Hub */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                    <Database className="w-4 h-4 text-amber-500" />
+                    <span>Phase 0 to Phase 6 Architecture &amp; Migration Hub</span>
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                    Verify Project IDs, copy google-services.json, run data deduplication, test offline sync and atomic transactions.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('firebase-hub')}
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#FF5B14] hover:bg-[#e04b08] transition-colors shrink-0 shadow-xs cursor-pointer"
+                >
+                  Open System Audit Hub →
+                </button>
+              </div>
             </div>
+          </div>
+        )}
+
+        {/* FIREBASE & ANDROID UNIFICATION ARCHITECTURE (Phase 0 - Phase 6) */}
+        {activeTab === 'firebase-hub' && (
+          <div className="space-y-6">
+            <FirebaseIntegrationHub />
           </div>
         )}
 
@@ -782,6 +929,208 @@ class MainActivity : AppCompatActivity() {
           </div>
         )}
 
+        {activeTab === 'bank-account' && (
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h2 className="font-display font-extrabold text-xl text-slate-900 dark:text-white">
+                  Linked Bank Accounts
+                </h2>
+                <p className="text-xs text-slate-500">Connect Nepali commercial banks via ConnectIPS / Fonepay</p>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-[#FF5B14]">
+                {user.bankAccounts} Linked
+              </span>
+            </div>
+
+            {actionFeedback && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{actionFeedback}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleLinkBank} className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+              <div>
+                <label htmlFor="bank-name" className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Bank Institution
+                </label>
+                <select
+                  id="bank-name"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold"
+                >
+                  <option>Nabil Bank Ltd.</option>
+                  <option>NIC Asia Bank</option>
+                  <option>Global IME Bank</option>
+                  <option>Siddhartha Bank</option>
+                  <option>Himalayan Bank</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="bank-acct" className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Account Number
+                </label>
+                <input
+                  id="bank-acct"
+                  type="text"
+                  required
+                  value={bankAccountNo}
+                  onChange={(e) => setBankAccountNo(e.target.value)}
+                  placeholder="00101234567890"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-mono"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#FF5B14] hover:bg-[#e04b08] cursor-pointer"
+              >
+                + Link Bank Account
+              </button>
+            </form>
+          </div>
+        )}
+
+        {(activeTab === 'send-money' || activeTab === 'payment') && (
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+            <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="font-display font-extrabold text-xl text-slate-900 dark:text-white">
+                {activeTab === 'send-money' ? 'Send Money & Vendor Payout' : 'Print Invoice Payment'}
+              </h2>
+              <p className="text-xs text-slate-500">
+                Instant settlement across Eyemaze Press orders, paper suppliers, and Payowire accounts.
+              </p>
+            </div>
+
+            {actionFeedback && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{actionFeedback}</span>
+              </div>
+            )}
+
+            <form
+              onSubmit={(e) =>
+                handleTransferOrPayment(
+                  e,
+                  `${activeTab === 'send-money' ? 'Transfer to' : 'Payment for'} ${transferRecipient}`,
+                  activeTab === 'send-money' ? 'Transfer' : 'Press Invoice'
+                )
+              }
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end"
+            >
+              <div>
+                <label htmlFor="tx-recipient" className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Recipient / Invoice ID
+                </label>
+                <input
+                  id="tx-recipient"
+                  type="text"
+                  required
+                  value={transferRecipient}
+                  onChange={(e) => setTransferRecipient(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold"
+                />
+              </div>
+              <div>
+                <label htmlFor="tx-amount" className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Amount (NPR)
+                </label>
+                <input
+                  id="tx-amount"
+                  type="number"
+                  min="100"
+                  required
+                  value={transferAmount}
+                  onChange={(e) => setTransferAmount(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-mono font-bold"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#FF5B14] hover:bg-[#e04b08] cursor-pointer"
+              >
+                {activeTab === 'send-money' ? 'Send Money Now' : 'Pay Invoice Now'}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {activeTab === 'airtime' && (
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+            <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="font-display font-extrabold text-xl text-slate-900 dark:text-white">
+                Mobile Airtime &amp; Data Top-Up
+              </h2>
+              <p className="text-xs text-slate-500">Instant Nepal Telecom (NTC), Ncell, and SmartCell recharge.</p>
+            </div>
+
+            {actionFeedback && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{actionFeedback}</span>
+              </div>
+            )}
+
+            <form
+              onSubmit={(e) =>
+                handleTransferOrPayment(e, `${airtimeCarrier} Recharge (${airtimePhone})`, 'Mobile Airtime')
+              }
+              className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end"
+            >
+              <div>
+                <label htmlFor="airtime-carrier" className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Operator
+                </label>
+                <select
+                  id="airtime-carrier"
+                  value={airtimeCarrier}
+                  onChange={(e) => setAirtimeCarrier(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold"
+                >
+                  <option>NTC</option>
+                  <option>Ncell</option>
+                  <option>Nepal Telecom Fiber</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="airtime-phone" className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Mobile Number
+                </label>
+                <input
+                  id="airtime-phone"
+                  type="tel"
+                  required
+                  value={airtimePhone}
+                  onChange={(e) => setAirtimePhone(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-mono"
+                />
+              </div>
+              <div>
+                <label htmlFor="airtime-amt" className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Amount (NPR)
+                </label>
+                <input
+                  id="airtime-amt"
+                  type="number"
+                  min="50"
+                  required
+                  value={transferAmount}
+                  onChange={(e) => setTransferAmount(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-mono font-bold"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#22C55E] hover:bg-emerald-600 cursor-pointer"
+              >
+                Recharge Now
+              </button>
+            </form>
+          </div>
+        )}
+
         {activeTab === 'settings' && (
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
             <h2 className="font-display font-extrabold text-xl text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -809,7 +1158,7 @@ class MainActivity : AppCompatActivity() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={onOpenSecurity}
@@ -819,13 +1168,23 @@ class MainActivity : AppCompatActivity() {
                 <span>View Banking Security Status</span>
               </button>
 
-              <button
-                type="button"
-                onClick={onExitToWebsite}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white brand-gradient cursor-pointer"
-              >
-                Return to Website
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={onExitToWebsite}
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 cursor-pointer"
+                >
+                  Return to Website
+                </button>
+                <button
+                  type="button"
+                  onClick={onSignOut}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 cursor-pointer flex items-center gap-1.5"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -879,7 +1238,7 @@ class MainActivity : AppCompatActivity() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-fund-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85"
         >
           <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -951,7 +1310,7 @@ class MainActivity : AppCompatActivity() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="create-card-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85"
         >
           <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">

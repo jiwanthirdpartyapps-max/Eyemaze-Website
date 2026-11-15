@@ -1,0 +1,191 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Hardened Helper Primitives
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedSignedIn() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isPrivilegedAdmin() {
+      return isVerifiedSignedIn() && (
+        request.auth.token.email in ['jiwan.thirdpartyapps@gmail.com', 'orders@eyemaze.com.np']
+      );
+    }
+
+    // --- Entity Validation Helpers ---
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'name', 'email', 'role']) &&
+             data.keys().hasOnly(['uid', 'name', 'email', 'role', 'accountId', 'photoUrl', 'emailVerified', 'balanceNpr', 'isVerified', 'createdAt', 'updatedAt']) &&
+             data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.email is string && data.email.size() > 0 && data.email.size() <= 100 &&
+             data.role in ['client', 'admin', 'cashier', 'press_operator'] &&
+             (!('accountId' in data) || (data.accountId is string && data.accountId.size() <= 32)) &&
+             (!('photoUrl' in data) || (data.photoUrl is string && data.photoUrl.size() <= 512)) &&
+             (!('emailVerified' in data) || data.emailVerified is bool) &&
+             (!('balanceNpr' in data) || (data.balanceNpr is number && data.balanceNpr >= 0)) &&
+             (!('isVerified' in data) || data.isVerified is bool) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['id', 'name', 'sku', 'category', 'unitPriceNpr', 'stockQty']) &&
+             data.keys().hasOnly(['id', 'name', 'sku', 'category', 'gsm', 'unitPriceNpr', 'stockQty', 'minOrderQty', 'updatedAt']) &&
+             data.id is string && data.id.size() <= 64 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.sku is string && data.sku.size() <= 64 &&
+             data.category in ['visiting-cards', 'flex-banners', 'offset-brochures', 'stationery-sets', 'packaging-boxes', 'merchandise'] &&
+             data.unitPriceNpr is number && data.unitPriceNpr >= 0 &&
+             data.stockQty is number && data.stockQty >= 0;
+    }
+
+    function isValidCustomer(data) {
+      return data.keys().hasAll(['id', 'companyName', 'email', 'phone']) &&
+             data.keys().hasOnly(['id', 'companyName', 'contactPerson', 'email', 'phone', 'panVat', 'city', 'creditLimitNpr', 'outstandingNpr', 'updatedAt']) &&
+             data.id is string && data.id.size() <= 64 &&
+             data.companyName is string && data.companyName.size() <= 150 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.phone is string && data.phone.size() <= 30;
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'category', 'quantity', 'totalNpr', 'status']) &&
+             data.keys().hasOnly(['id', 'userId', 'title', 'client', 'category', 'spec', 'quantity', 'totalNpr', 'status', 'idempotencyKey', 'createdAt', 'updatedAt']) &&
+             data.id is string && data.id.size() <= 32 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.title is string && data.title.size() <= 150 &&
+             data.category in ['visiting-cards', 'flex-banners', 'offset-brochures', 'stationery-sets', 'packaging-boxes', 'merchandise'] &&
+             data.quantity is number && data.quantity > 0 &&
+             data.totalNpr is number && data.totalNpr >= 0 &&
+             data.status in ['Proof Review', 'In Press', 'Dispatched', 'Completed'];
+    }
+
+    function isValidSale(data) {
+      return data.keys().hasAll(['id', 'totalNpr', 'paymentMethod', 'paymentStatus']) &&
+             data.keys().hasOnly(['id', 'orderId', 'customerId', 'subtotalNpr', 'vatAmountNpr', 'totalNpr', 'paymentMethod', 'paymentStatus', 'createdAt']) &&
+             data.id is string && data.id.size() <= 64 &&
+             data.totalNpr is number && data.totalNpr >= 0 &&
+             data.paymentMethod in ['eSewa', 'Khalti', 'ConnectIPS', 'Bank Transfer', 'Cash', 'Wallet'] &&
+             data.paymentStatus in ['Paid', 'Unpaid', 'Partial'];
+    }
+
+    function isValidExpense(data) {
+      return data.keys().hasAll(['id', 'title', 'category', 'amountNpr']) &&
+             data.keys().hasOnly(['id', 'title', 'category', 'amountNpr', 'paidTo', 'createdAt']) &&
+             data.id is string && data.id.size() <= 64 &&
+             data.title is string && data.title.size() <= 150 &&
+             data.category in ['Raw Stock', 'Plates & Chemicals', 'Ink & Toners', 'Electricity & Fuel', 'Logistics & Courier', 'Maintenance'] &&
+             data.amountNpr is number && data.amountNpr > 0;
+    }
+
+    // --- Collections Match Rules ---
+
+    // 1. Users Collection (Strict Anti-Escalation + Email Binding + PII Isolation)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isPrivilegedAdmin());
+      allow list: if isPrivilegedAdmin();
+      allow create: if isValidId(userId) && isVerifiedSignedIn() && isValidUser(incoming()) && (
+        isPrivilegedAdmin() || (
+          isOwner(userId) &&
+          incoming().uid == request.auth.uid &&
+          incoming().email == request.auth.token.email &&
+          incoming().role == 'client' &&
+          (!('isVerified' in incoming()) || incoming().isVerified == false) &&
+          (!('balanceNpr' in incoming()) || incoming().balanceNpr == 0) &&
+          (!('createdAt' in incoming()) || incoming().createdAt == request.time) &&
+          (!('updatedAt' in incoming()) || incoming().updatedAt == request.time)
+        )
+      );
+      allow update: if isValidId(userId) && isVerifiedSignedIn() && isValidUser(incoming()) && (
+        isPrivilegedAdmin() || (
+          isOwner(userId) &&
+          incoming().uid == existing().uid &&
+          incoming().email == existing().email &&
+          incoming().role == existing().role &&
+          (!('updatedAt' in incoming()) || incoming().updatedAt == request.time) &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['name', 'photoUrl', 'updatedAt'])
+        )
+      );
+      allow delete: if isValidId(userId) && isPrivilegedAdmin();
+    }
+
+    // 2. Products Catalog (Public Read for Estimator, Admin Only Writes)
+    match /products/{productId} {
+      allow get: if isValidId(productId);
+      allow list: if true;
+      allow create, update: if isValidId(productId) && isPrivilegedAdmin() && isValidProduct(incoming());
+      allow delete: if isValidId(productId) && isPrivilegedAdmin();
+    }
+
+    // 3. Customers Directory (PII Protected to Staff/Admin)
+    match /customers/{customerId} {
+      allow get: if isValidId(customerId) && isPrivilegedAdmin();
+      allow list: if isPrivilegedAdmin();
+      allow create, update: if isValidId(customerId) && isPrivilegedAdmin() && isValidCustomer(incoming());
+      allow delete: if isValidId(customerId) && isPrivilegedAdmin();
+    }
+
+    // 4. Live Orders Queue (Owner Read/Status or Admin Full Control, Terminal Locked for Clients)
+    match /orders/{orderId} {
+      allow get: if isValidId(orderId) && isSignedIn() && (resource.data.userId == request.auth.uid || isPrivilegedAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isPrivilegedAdmin());
+      allow create: if isValidId(orderId) && isSignedIn() && isValidOrder(incoming()) && (
+        incoming().userId == request.auth.uid || isPrivilegedAdmin()
+      );
+      allow update: if isValidId(orderId) && isSignedIn() && isValidOrder(incoming()) && (
+        isPrivilegedAdmin() || (
+          resource.data.userId == request.auth.uid &&
+          existing().status != 'Completed' &&
+          incoming().userId == existing().userId &&
+          incoming().id == existing().id &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+        )
+      );
+      allow delete: if isValidId(orderId) && isPrivilegedAdmin();
+    }
+
+    // 5. Sales Invoices (Admin/Staff Only — Protects Financial PII)
+    match /sales/{saleId} {
+      allow get: if isValidId(saleId) && isPrivilegedAdmin();
+      allow list: if isPrivilegedAdmin();
+      allow create, update: if isValidId(saleId) && isPrivilegedAdmin() && isValidSale(incoming());
+      allow delete: if isValidId(saleId) && isPrivilegedAdmin();
+    }
+
+    // 6. Production Expenses (Privileged Admin Only)
+    match /expenses/{expenseId} {
+      allow get: if isValidId(expenseId) && isPrivilegedAdmin();
+      allow list: if isPrivilegedAdmin();
+      allow create, update: if isValidId(expenseId) && isPrivilegedAdmin() && isValidExpense(incoming());
+      allow delete: if isValidId(expenseId) && isPrivilegedAdmin();
+    }
+  }
+}

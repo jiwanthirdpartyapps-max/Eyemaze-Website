@@ -20,30 +20,61 @@ import { AiPrintAdvisorModal } from './components/AiPrintAdvisorModal';
 import { SecurityShieldModal } from './components/SecurityShieldModal';
 import { LoginModal } from './components/LoginModal';
 import { UserDashboard } from './components/UserDashboard';
+import { FirebaseIntegrationHub } from './components/FirebaseIntegrationHub';
 import { INITIAL_PRINT_ORDERS } from './data/eyemazeData';
-import { INITIAL_USER_PROFILE, type UserProfile } from './utils/dashboardLogic';
+import { type UserProfile } from './utils/dashboardLogic';
+import { subscribeToAuthChanges, signOutFirebase } from './firebase';
 import type { PrintCategory, PrintFinish, PrintOrder } from './utils/printPricing';
 
 export default function App() {
   const [orders, setOrders] = useState<PrintOrder[]>(INITIAL_PRINT_ORDERS);
   const [selectedCategory, setSelectedCategory] = useState<PrintCategory>('visiting-cards');
   const [selectedFinish, setSelectedFinish] = useState<PrintFinish>('gold-foil');
-  const [user, setUser] = useState<UserProfile>(INITIAL_USER_PROFILE);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [wantsDashboard, setWantsDashboard] = useState(
+    () => typeof window !== 'undefined' && window.location.hash === '#dashboard'
+  );
 
   // Modals
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [securityModalOpen, setSecurityModalOpen] = useState(false);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [firebaseHubModalOpen, setFirebaseHubModalOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
-  // Auto-route to dashboard if URL hash is #dashboard
+  // Observe real Firebase Auth state so every signed-in Google user gets their own profile
   useEffect(() => {
-    if (window.location.hash === '#dashboard') {
-      setIsLoggedIn(true);
-    }
+    const unsubscribe = subscribeToAuthChanges((authProfile) => {
+      setUser(authProfile);
+      setAuthReady(true);
+    });
+    return () => unsubscribe();
   }, []);
+
+  // Track #dashboard hash safely without unauthenticated bypass
+  useEffect(() => {
+    const syncHash = () => {
+      if (window.location.hash === '#dashboard') {
+        setWantsDashboard(true);
+      } else if (window.location.hash === '' || window.location.hash === '#') {
+        setWantsDashboard(false);
+      }
+    };
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+    return () => window.removeEventListener('hashchange', syncHash);
+  }, []);
+
+  // Enforce zero-trust auth gate: prompt Google Sign-In if #dashboard is requested unauthenticated
+  useEffect(() => {
+    if (authReady && wantsDashboard && !user) {
+      setLoginModalOpen(true);
+    }
+  }, [authReady, wantsDashboard, user]);
+
+  const isLoggedIn = user !== null;
 
   const handleToggleTheme = () => {
     setIsDark((prev) => {
@@ -82,7 +113,19 @@ export default function App() {
 
   const handleLoginSuccess = (loggedUser: UserProfile) => {
     setUser(loggedUser);
-    setIsLoggedIn(true);
+    setWantsDashboard(true);
+    if (typeof window !== 'undefined') {
+      window.location.hash = '#dashboard';
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOutFirebase();
+    setUser(null);
+    setWantsDashboard(false);
+    if (typeof window !== 'undefined') {
+      window.location.hash = '';
+    }
   };
 
   const handleContactSubmit = (e: React.FormEvent) => {
@@ -94,17 +137,18 @@ export default function App() {
     setContactMessage('');
   };
 
-  // IF LOGGED IN: Render the Exact Payowire User Dashboard (Matching image_1f64d8e5.png)
-  if (isLoggedIn) {
+  // IF AUTHENTICATED & IN DASHBOARD: Render the Payowire User Dashboard scoped strictly to `user`
+  if (user && wantsDashboard) {
     return (
       <div className={`min-h-screen transition-colors duration-200 ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#f4f7fc] text-slate-900'}`}>
         <UserDashboard
           user={user}
-          onUpdateUser={setUser}
+          onUpdateUser={(updated) => setUser(updated)}
           onExitToWebsite={() => {
-            setIsLoggedIn(false);
+            setWantsDashboard(false);
             window.location.hash = '';
           }}
+          onSignOut={handleSignOut}
           onOpenSecurity={() => setSecurityModalOpen(true)}
           isDark={isDark}
           onToggleTheme={handleToggleTheme}
@@ -127,10 +171,18 @@ export default function App() {
         onOpenLogin={() => setLoginModalOpen(true)}
         isLoggedIn={isLoggedIn}
         user={user}
-        onGoToDashboard={() => setIsLoggedIn(true)}
+        onGoToDashboard={() => {
+          if (user) {
+            setWantsDashboard(true);
+            window.location.hash = '#dashboard';
+          } else {
+            setLoginModalOpen(true);
+          }
+        }}
         isDark={isDark}
         onToggleTheme={handleToggleTheme}
         onOpenSecurity={() => setSecurityModalOpen(true)}
+        onOpenFirebaseHub={() => setFirebaseHubModalOpen(true)}
         onSelectCategory={handleSelectCategory}
       />
 
@@ -257,7 +309,7 @@ export default function App() {
                         required
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
-                        placeholder="Jiwan Kumar Majhi"
+                        placeholder="Your full name or company"
                         className="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-rose-500"
                       />
                     </div>
@@ -271,7 +323,7 @@ export default function App() {
                         required
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
-                        placeholder="4jsm.life@gmail.com"
+                        placeholder="you@company.com"
                         className="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-rose-500"
                       />
                     </div>
@@ -348,6 +400,19 @@ export default function App() {
         isOpen={securityModalOpen}
         onClose={() => setSecurityModalOpen(false)}
       />
+
+      {firebaseHubModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="System Architecture and Firebase Integration Hub"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 overflow-y-auto"
+        >
+          <div className="relative w-full max-w-5xl my-8">
+            <FirebaseIntegrationHub onClose={() => setFirebaseHubModalOpen(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

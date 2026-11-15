@@ -1,0 +1,135 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with role-based access control and contact info.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "description": "User full name", "maxLength": 100 },
+        "email": { "type": "string", "description": "User email address", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["client", "admin", "cashier", "press_operator"] },
+        "accountId": { "type": "string", "description": "Unique account number", "maxLength": 32 },
+        "photoUrl": { "type": "string", "description": "Google profile photo URL", "maxLength": 512 },
+        "emailVerified": { "type": "boolean", "description": "Whether Google/Firebase email is verified" },
+        "balanceNpr": { "type": "number", "description": "Available wallet credit balance in NPR" },
+        "isVerified": { "type": "boolean", "description": "Whether account KYC identity is verified" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "Product": {
+      "title": "Print Product & Stock Item",
+      "description": "Print products, paper stock specifications, and base rates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Product ID", "maxLength": 64 },
+        "name": { "type": "string", "description": "Product name", "maxLength": 150 },
+        "sku": { "type": "string", "description": "Stock keeping unit", "maxLength": 64 },
+        "category": { "type": "string", "enum": ["visiting-cards", "flex-banners", "offset-brochures", "stationery-sets", "packaging-boxes", "merchandise"] },
+        "gsm": { "type": "number", "description": "Paper GSM weight" },
+        "unitPriceNpr": { "type": "number", "description": "Base unit price in NPR" },
+        "stockQty": { "type": "number", "description": "Available inventory count" },
+        "minOrderQty": { "type": "number", "description": "Minimum order quantity" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "sku", "category", "unitPriceNpr", "stockQty"]
+    },
+    "Customer": {
+      "title": "Enterprise Client",
+      "description": "Corporate client profile with VAT/PAN number and credit balance.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Customer ID", "maxLength": 64 },
+        "companyName": { "type": "string", "description": "Registered company name", "maxLength": 150 },
+        "contactPerson": { "type": "string", "description": "Primary representative", "maxLength": 100 },
+        "email": { "type": "string", "description": "Contact email", "maxLength": 100 },
+        "phone": { "type": "string", "description": "Contact phone", "maxLength": 30 },
+        "panVat": { "type": "string", "description": "PAN/VAT Registration Number", "maxLength": 30 },
+        "city": { "type": "string", "description": "City in Nepal", "maxLength": 50 },
+        "creditLimitNpr": { "type": "number", "description": "Allowed credit limit" },
+        "outstandingNpr": { "type": "number", "description": "Current unpaid balance" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "companyName", "email", "phone"]
+    },
+    "Order": {
+      "title": "Print Press Job",
+      "description": "Custom print order with technical specifications, proofing status, and pricing.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Order tracking code (e.g. EYM-4082)", "maxLength": 32 },
+        "userId": { "type": "string", "description": "Author UID", "maxLength": 128 },
+        "title": { "type": "string", "description": "Job title", "maxLength": 150 },
+        "client": { "type": "string", "description": "Client company name", "maxLength": 150 },
+        "category": { "type": "string", "enum": ["visiting-cards", "flex-banners", "offset-brochures", "stationery-sets", "packaging-boxes", "merchandise"] },
+        "spec": { "type": "string", "description": "Technical paper and finish spec", "maxLength": 200 },
+        "quantity": { "type": "number", "description": "Total print run quantity" },
+        "totalNpr": { "type": "number", "description": "Order total in NPR" },
+        "status": { "type": "string", "enum": ["Proof Review", "In Press", "Dispatched", "Completed"] },
+        "idempotencyKey": { "type": "string", "description": "Duplicate order prevention key", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "category", "quantity", "totalNpr", "status"]
+    },
+    "Sale": {
+      "title": "Sales Invoice Transaction",
+      "description": "Financial sales entry recording billed revenue and VAT breakdown.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Invoice number", "maxLength": 64 },
+        "orderId": { "type": "string", "description": "Associated order ID", "maxLength": 64 },
+        "customerId": { "type": "string", "description": "Customer ID", "maxLength": 64 },
+        "subtotalNpr": { "type": "number" },
+        "vatAmountNpr": { "type": "number" },
+        "totalNpr": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["eSewa", "Khalti", "ConnectIPS", "Bank Transfer", "Cash", "Wallet"] },
+        "paymentStatus": { "type": "string", "enum": ["Paid", "Unpaid", "Partial"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "totalNpr", "paymentMethod", "paymentStatus"]
+    },
+    "Expense": {
+      "title": "Production Expense",
+      "description": "Operating expenditure for raw paper stock, CTP plates, inks, and logistics.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Expense ID", "maxLength": 64 },
+        "title": { "type": "string", "description": "Expense description", "maxLength": 150 },
+        "category": { "type": "string", "enum": ["Raw Stock", "Plates & Chemicals", "Ink & Toners", "Electricity & Fuel", "Logistics & Courier", "Maintenance"] },
+        "amountNpr": { "type": "number" },
+        "paidTo": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "category", "amountNpr"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile documents keyed by Firebase Auth UID."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Print product catalog, stock counts, and rate matrix."
+    },
+    "/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/Customer" },
+      "description": "Corporate client directory and credit lines."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Live production jobs queue and history."
+    },
+    "/sales/{saleId}": {
+      "schema": { "$ref": "#/entities/Sale" },
+      "description": "Sales ledger and billing records."
+    },
+    "/expenses/{expenseId}": {
+      "schema": { "$ref": "#/entities/Expense" },
+      "description": "Press operating expenditures."
+    }
+  }
+}
