@@ -41,8 +41,8 @@ const PrintPortalDashboard = lazy(() =>
 const GalleryAndFaq = lazy(() =>
   import('./components/GalleryAndFaq').then((m) => ({ default: m.GalleryAndFaq }))
 );
-const PayowireFooter = lazy(() =>
-  import('./components/PayowireFooter').then((m) => ({ default: m.PayowireFooter }))
+const EyemazeFooter = lazy(() =>
+  import('./components/EyemazeFooter').then((m) => ({ default: m.EyemazeFooter }))
 );
 const EyemazeLocationMap = lazy(() =>
   import('./components/EyemazeLocationMap').then((m) => ({ default: m.EyemazeLocationMap }))
@@ -61,6 +61,9 @@ const LoginModal = lazy(() =>
 );
 const UserDashboard = lazy(() =>
   import('./components/UserDashboard').then((m) => ({ default: m.UserDashboard }))
+);
+const EyemazeAdminDashboard = lazy(() =>
+  import('./components/EyemazeAdminDashboard').then((m) => ({ default: m.EyemazeAdminDashboard }))
 );
 const FirebaseIntegrationHub = lazy(() =>
   import('./components/FirebaseIntegrationHub').then((m) => ({ default: m.FirebaseIntegrationHub }))
@@ -84,6 +87,9 @@ export default function App() {
   const [wantsDashboard, setWantsDashboard] = useState(
     () => typeof window !== 'undefined' && window.location.hash === '#dashboard'
   );
+  const [wantsAdminDashboard, setWantsAdminDashboard] = useState(
+    () => typeof window !== 'undefined' && window.location.hash === '#admin'
+  );
 
   // Modals
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -104,7 +110,7 @@ export default function App() {
     return () => window.removeEventListener('gmp-quota-exceeded', onQuotaExceeded);
   }, []);
 
-  // Load Firebase Auth only once auth is requested (#dashboard, prior session hint, or user interaction/login)
+  // Load Firebase Auth only once auth is requested (#dashboard, #admin, prior session hint, or user interaction/login)
   useEffect(() => {
     if (!authRequested) {
       const onFirstInteraction = () => setAuthRequested(true);
@@ -146,14 +152,20 @@ export default function App() {
     };
   }, [authRequested]);
 
-  // Track #dashboard hash safely without unauthenticated bypass
+  // Track #dashboard or #admin hash safely
   useEffect(() => {
     const syncHash = () => {
       if (window.location.hash === '#dashboard') {
         setAuthRequested(true);
         setWantsDashboard(true);
+        setWantsAdminDashboard(false);
+      } else if (window.location.hash === '#admin') {
+        setAuthRequested(true);
+        setWantsAdminDashboard(true);
+        setWantsDashboard(false);
       } else if (window.location.hash === '' || window.location.hash === '#') {
         setWantsDashboard(false);
+        setWantsAdminDashboard(false);
       }
     };
     syncHash();
@@ -161,12 +173,12 @@ export default function App() {
     return () => window.removeEventListener('hashchange', syncHash);
   }, []);
 
-  // Enforce zero-trust auth gate: prompt Google Sign-In if #dashboard is requested unauthenticated
+  // Enforce zero-trust auth gate: prompt Google Sign-In if #dashboard or #admin is requested unauthenticated
   useEffect(() => {
-    if (authReady && wantsDashboard && !user) {
+    if (authReady && (wantsDashboard || wantsAdminDashboard) && !user) {
       setLoginModalOpen(true);
     }
-  }, [authReady, wantsDashboard, user]);
+  }, [authReady, wantsDashboard, wantsAdminDashboard, user]);
 
   const isLoggedIn = user !== null;
 
@@ -230,6 +242,7 @@ export default function App() {
       }
       setUser(null);
       setWantsDashboard(false);
+      setWantsAdminDashboard(false);
       if (typeof window !== 'undefined') {
         window.location.hash = '';
       }
@@ -244,6 +257,26 @@ export default function App() {
     setContactEmail('');
     setContactMessage('');
   };
+
+  // IF AUTHENTICATED & IN ADMIN DASHBOARD: Render Eyemaze Admin CMS
+  if (user && wantsAdminDashboard) {
+    return (
+      <div className={`min-h-screen transition-colors duration-200 ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#f4f7fc] text-slate-900'}`}>
+        <Suspense fallback={<div className="min-h-screen bg-slate-950" aria-hidden="true" />}>
+          <EyemazeAdminDashboard
+            user={user}
+            onExitToWebsite={() => {
+              setWantsAdminDashboard(false);
+              window.location.hash = '';
+            }}
+            onSignOut={handleSignOut}
+            isDark={isDark}
+            onToggleTheme={handleToggleTheme}
+          />
+        </Suspense>
+      </div>
+    );
+  }
 
   // IF AUTHENTICATED & IN DASHBOARD: Render the Payowire User Dashboard scoped strictly to `user`
   if (user && wantsDashboard) {
@@ -536,9 +569,9 @@ export default function App() {
         </section>
       </main>
 
-      {/* 16. Payowire-Style 4-Column Footer with Trustpilot Rating */}
+      {/* 16. Eyemaze 4-Column Footer with Trustpilot Rating */}
       <Suspense fallback={null}>
-        <PayowireFooter onOpenSecurity={() => setSecurityModalOpen(true)} />
+        <EyemazeFooter onOpenSecurity={() => setSecurityModalOpen(true)} />
       </Suspense>
 
       {/* 17. Modals */}

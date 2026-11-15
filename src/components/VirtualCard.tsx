@@ -61,7 +61,7 @@ export const VirtualCard: React.FC<VirtualCardProps> = ({
   status = 'active',
   isLinkedVerified = false,
   spendingLimitUsd,
-  issuerBrand = 'PAYOWIRE',
+  issuerBrand = 'EYEMAZE',
   theme,
   isRevealed: controlledRevealed,
   onToggleReveal,
@@ -127,7 +127,7 @@ export const VirtualCard: React.FC<VirtualCardProps> = ({
     const payload = JSON.stringify(
       {
         standard: 'EMVCo-Payment-Tokenisation-v2',
-        issuer: 'Payowire / Eyemaze Enterprises',
+        issuer: 'Eyemaze Graphics Enterprises',
         ...pass,
       },
       null,

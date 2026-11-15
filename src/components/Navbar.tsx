@@ -49,22 +49,17 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-50 bg-[#0c101d]/95 backdrop-blur-md border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between gap-6">
-        {/* Zone 1: Brand Logo with Payowire Octagonal Gradient Jewel */}
+        {/* Zone 1: Brand Logo with Eyemaze Official Logo */}
         <a
           href="#"
-          className="flex items-center gap-2.5 text-white font-display font-extrabold text-2xl tracking-tight shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose-500"
+          className="flex items-center gap-2.5 text-white font-display font-extrabold text-xl tracking-tight shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose-500"
         >
-          {/* Octagonal Gemstone/Jewel Ring Icon */}
-          <span
-            aria-hidden="true"
-            className="w-8 h-8 rounded-xl brand-gradient flex items-center justify-center shadow-lg shadow-rose-600/30 p-1"
-          >
-            <svg viewBox="0 0 24 24" className="w-full h-full text-white" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polygon points="12 2 19 6 22 13 17 21 7 21 2 13 5 6 12 2" />
-              <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.6" />
-            </svg>
-          </span>
-          <span>Eyemaze</span>
+          <img
+            src="/assets/aistudio/eyemaze_site_logo_ff187c27.png"
+            alt="Eyemaze Graphics Logo"
+            className="w-9 h-9 object-contain rounded-xl bg-white/10 p-1"
+          />
+          <span className="font-extrabold tracking-tight">Eyemaze</span>
         </a>
 
         {/* Zone 2: Navigation Links with Payowire-Style Dropdowns */}

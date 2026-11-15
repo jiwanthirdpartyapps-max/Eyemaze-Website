@@ -230,13 +230,13 @@ class MainActivity : AppCompatActivity() {
         <div className="space-y-6">
           {/* Logo */}
           <div className="flex items-center gap-2.5 px-2">
-            <span className="w-8 h-8 rounded-xl brand-gradient flex items-center justify-center text-white font-bold shadow-md">
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polygon points="12 2 19 6 22 13 17 21 7 21 2 13 5 6 12 2" />
-              </svg>
-            </span>
+            <img
+              src="/assets/aistudio/eyemaze_site_logo_ff187c27.png"
+              alt="Eyemaze Graphics Logo"
+              className="w-9 h-9 object-contain rounded-xl bg-slate-100 dark:bg-slate-800 p-1"
+            />
             <span className="font-display font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
-              Payowire
+              Eyemaze
             </span>
           </div>
 

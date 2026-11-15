@@ -208,7 +208,7 @@ export const VirtualCardsStudio: React.FC<VirtualCardsStudioProps> = ({
 
     const challenge = create3dsChallenge({
       card: matchedCard,
-      merchantName: 'Payowire / Eyemaze Card Link Verification',
+      merchantName: 'Eyemaze Card Link Verification',
       amountUsd: 1.0,
       purpose: 'CARD_LINK_VERIFICATION',
     });

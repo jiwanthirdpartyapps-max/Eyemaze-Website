@@ -2,15 +2,15 @@ import React from 'react';
 import { Star, MapPin, Mail, Phone, Clock, ShieldCheck, ExternalLink } from 'lucide-react';
 import { EYEMAZE_LOCATION } from '../data/eyemazeLocation';
 
-interface PayowireFooterProps {
+interface EyemazeFooterProps {
   onOpenSecurity: () => void;
 }
 
-export const PayowireFooter: React.FC<PayowireFooterProps> = ({ onOpenSecurity }) => {
+export const EyemazeFooter: React.FC<EyemazeFooterProps> = ({ onOpenSecurity }) => {
   return (
     <footer className="bg-slate-950 text-slate-400 pt-16 pb-12 px-6 border-t border-slate-800">
       <div className="max-w-7xl mx-auto space-y-12">
-        {/* Top Reviews Banner (Payowire Style) */}
+        {/* Top Reviews Banner */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center gap-1 text-emerald-400">
@@ -128,6 +128,14 @@ export const PayowireFooter: React.FC<PayowireFooterProps> = ({ onOpenSecurity }
                 >
                   Verify Banking Security Protocols
                 </button>
+              </li>
+              <li>
+                <a
+                  href="#admin"
+                  className="text-rose-400 font-bold hover:underline inline-flex items-center gap-1 mt-1"
+                >
+                  <span>🔒 Admin CMS Login</span>
+                </a>
               </li>
             </ul>
           </div>
