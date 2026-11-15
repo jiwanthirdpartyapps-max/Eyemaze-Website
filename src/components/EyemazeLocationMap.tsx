@@ -46,13 +46,21 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
 
   useEffect(() => {
     if (!map) return;
-    map.setMapTypeId(mapType);
+    try {
+      map.setMapTypeId(mapType);
+    } catch {
+      // Ignore map type errors
+    }
   }, [map, mapType]);
 
   useEffect(() => {
     if (!map || recenterSignal === 0) return;
-    map.panTo(EYEMAZE_LOCATION.coordinates);
-    map.setZoom(18);
+    try {
+      map.panTo(EYEMAZE_LOCATION.coordinates);
+      map.setZoom(18);
+    } catch {
+      // Ignore pan errors
+    }
   }, [map, recenterSignal]);
 
   useEffect(() => {
@@ -60,19 +68,27 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          map.panTo(userCoords);
-          map.setZoom(15);
+          try {
+            const userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            map.panTo(userCoords);
+            map.setZoom(15);
+          } catch {
+            map.panTo(EYEMAZE_LOCATION.coordinates);
+          }
         },
         () => {
-          map.panTo(EYEMAZE_LOCATION.coordinates);
-          map.setZoom(18);
+          try {
+            map.panTo(EYEMAZE_LOCATION.coordinates);
+            map.setZoom(18);
+          } catch {}
         },
         { timeout: 8000 }
       );
     } else {
-      map.panTo(EYEMAZE_LOCATION.coordinates);
-      map.setZoom(18);
+      try {
+        map.panTo(EYEMAZE_LOCATION.coordinates);
+        map.setZoom(18);
+      } catch {}
     }
   }, [map, followUserSignal]);
 
@@ -80,27 +96,8 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
     loadingStatus === APILoadingStatus.AUTH_FAILURE ||
     loadingStatus === APILoadingStatus.FAILED
   ) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-slate-900 text-slate-200 space-y-3">
-        <MapPin className="w-8 h-8 text-rose-400" />
-        <p className="text-sm font-bold text-white">
-          {EYEMAZE_LOCATION.businessName} · {EYEMAZE_LOCATION.addressNepali}
-        </p>
-        <p className="text-xs text-slate-400 font-mono">
-          {EYEMAZE_LOCATION.coordinates.lat.toFixed(7)}° N,{' '}
-          {EYEMAZE_LOCATION.coordinates.lng.toFixed(7)}° E · Plus Code {EYEMAZE_LOCATION.plusCode}
-        </p>
-        <a
-          href={EYEMAZE_LOCATION.googleMapsPlaceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors"
-        >
-          <span>Open in Google Maps</span>
-          <ExternalLink className="w-3.5 h-3.5" />
-        </a>
-      </div>
-    );
+    onQuotaOrAuthError();
+    return null;
   }
 
   return (
@@ -113,7 +110,6 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
       disableDefaultUI={false}
       streetViewControl={false}
       mapTypeControl={false}
-      internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
       className="w-full h-full"
     >
       {map && loadingStatus === APILoadingStatus.LOADED && (
@@ -237,29 +233,28 @@ export const EyemazeLocationMap: React.FC = () => {
   const [apiKey, setApiKey] = useState<string>(
     () => (import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined) || ''
   );
-  const [keyChecked, setKeyChecked] = useState<boolean>(() =>
-    Boolean(import.meta.env.VITE_GOOGLE_MAPS_API_KEY)
-  );
   const [mapType, setMapType] = useState<MapTypeMode>('hybrid');
   const [recenterSignal, setRecenterSignal] = useState(0);
   const [followUserSignal, setFollowUserSignal] = useState(0);
   const [mapError, setMapError] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(18);
   const [trafficLayerActive, setTrafficLayerActive] = useState(false);
 
   useEffect(() => {
     const markFailed = () => setMapError(true);
-    const onWindowError = (event: ErrorEvent) => {
-      const msg = String(event.message || '');
-      const src = String(event.filename || '');
+    const onWindowError = (event: ErrorEvent | Event) => {
+      const msg = String((event as ErrorEvent).message || (event as CustomEvent).detail || '');
+      const src = String((event as ErrorEvent).filename || '');
       if (
         src.includes('maps.googleapis.com') ||
         src.includes('react-google-maps') ||
         msg.includes("reading 'keys'") ||
         msg.includes('getRootNode') ||
-        msg.includes('RefererNotAllowedMapError')
+        msg.includes('RefererNotAllowedMapError') ||
+        msg.includes('Google Maps JavaScript API error')
       ) {
-        event.preventDefault();
+        if ('preventDefault' in event && typeof event.preventDefault === 'function') {
+          event.preventDefault();
+        }
         setMapError(true);
       }
     };
@@ -267,18 +262,17 @@ export const EyemazeLocationMap: React.FC = () => {
     window.addEventListener('gmp-auth-failure', markFailed);
     window.addEventListener('gmp-quota-exceeded', markFailed);
     window.addEventListener('error', onWindowError);
+    window.addEventListener('unhandledrejection', onWindowError);
     return () => {
       window.removeEventListener('gmp-auth-failure', markFailed);
       window.removeEventListener('gmp-quota-exceeded', markFailed);
       window.removeEventListener('error', onWindowError);
+      window.removeEventListener('unhandledrejection', onWindowError);
     };
   }, []);
 
   useEffect(() => {
-    if (apiKey) {
-      setKeyChecked(true);
-      return;
-    }
+    if (apiKey) return;
     let active = true;
     fetch('/api/config/maps')
       .then((res) => (res.ok ? res.json() : null))
@@ -288,10 +282,7 @@ export const EyemazeLocationMap: React.FC = () => {
           setApiKey(data.apiKey.trim());
         }
       })
-      .catch(() => {})
-      .finally(() => {
-        if (active) setKeyChecked(true);
-      });
+      .catch(() => {});
     return () => {
       active = false;
     };
@@ -368,7 +359,7 @@ export const EyemazeLocationMap: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Map Mode & Traffic / Terrain Toggle */}
+          {/* Map Mode & Traffic Toggle */}
           <div className="inline-flex rounded-xl bg-slate-950 p-1 border border-slate-800 text-xs">
             <button
               type="button"
@@ -441,31 +432,11 @@ export const EyemazeLocationMap: React.FC = () => {
         </div>
       </div>
 
-      {/* Interactive Map Canvas (Explicit height required per CF2) */}
+      {/* Interactive Map Canvas */}
       <div className="w-full h-[360px] sm:h-[420px] relative bg-slate-950">
-        {/* Custom Zoom Controls Overlay */}
-        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1.5 bg-slate-950/80 backdrop-blur-md p-1 rounded-xl border border-white/15 shadow-xl">
-          <button
-            type="button"
-            onClick={() => setZoomLevel((z) => Math.min(21, z + 1))}
-            aria-label="Zoom in"
-            className="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setZoomLevel((z) => Math.max(10, z - 1))}
-            aria-label="Zoom out"
-            className="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
-          >
-            <Minus className="w-4 h-4" />
-          </button>
-        </div>
-
         <MapErrorBoundary fallback={fallbackCard} onError={handleQuotaOrAuthError}>
-          {apiKey && !mapError ? (
-            <APIProvider apiKey={apiKey} libraries={['marker']} language="en" region="NP">
+          {!mapError ? (
+            <APIProvider apiKey={apiKey || 'AIzaSyDummyKeyForFallback'} libraries={['marker']} language="en" region="NP">
               <StudioMapCanvas
                 mapType={mapType}
                 recenterSignal={recenterSignal}
