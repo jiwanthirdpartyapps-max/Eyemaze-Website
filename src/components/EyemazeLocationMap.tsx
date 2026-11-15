@@ -10,26 +10,30 @@ import {
   useApiLoadingStatus,
   useMap,
 } from '@vis.gl/react-google-maps';
-import { Compass, ExternalLink, Layers, MapPin, Navigation, Phone } from 'lucide-react';
+import { Compass, ExternalLink, Layers, MapPin, Navigation, Phone, Plus, Minus, LocateFixed, Eye } from 'lucide-react';
 import { EYEMAZE_LOCATION } from '../data/eyemazeLocation';
+import pressHeroImg from '../assets/images/printing_press_hero_1794657251905.jpg';
 
 type MapTypeMode = 'hybrid' | 'roadmap';
 
 interface StudioMapCanvasProps {
   mapType: MapTypeMode;
   recenterSignal: number;
+  followUserSignal: number;
   onQuotaOrAuthError: () => void;
 }
 
 const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
   mapType,
   recenterSignal,
+  followUserSignal,
   onQuotaOrAuthError,
 }) => {
   const map = useMap();
   const loadingStatus = useApiLoadingStatus();
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [infoOpen, setInfoOpen] = useState(true);
+  const [hoverPreviewOpen, setHoverPreviewOpen] = useState(false);
 
   useEffect(() => {
     if (
@@ -50,6 +54,27 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
     map.panTo(EYEMAZE_LOCATION.coordinates);
     map.setZoom(18);
   }, [map, recenterSignal]);
+
+  useEffect(() => {
+    if (!map || followUserSignal === 0) return;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          map.panTo(userCoords);
+          map.setZoom(15);
+        },
+        () => {
+          map.panTo(EYEMAZE_LOCATION.coordinates);
+          map.setZoom(18);
+        },
+        { timeout: 8000 }
+      );
+    } else {
+      map.panTo(EYEMAZE_LOCATION.coordinates);
+      map.setZoom(18);
+    }
+  }, [map, followUserSignal]);
 
   if (
     loadingStatus === APILoadingStatus.AUTH_FAILURE ||
@@ -93,19 +118,46 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
     >
       {map && loadingStatus === APILoadingStatus.LOADED && (
         <MapErrorBoundary fallback={null} onError={onQuotaOrAuthError}>
-          <AdvancedMarker
-            ref={markerRef}
-            position={EYEMAZE_LOCATION.coordinates}
-            title={`${EYEMAZE_LOCATION.businessName} — ${EYEMAZE_LOCATION.addressNepali}`}
-            onClick={() => setInfoOpen((prev) => !prev)}
+          <div
+            onMouseEnter={() => setHoverPreviewOpen(true)}
+            onMouseLeave={() => setHoverPreviewOpen(false)}
           >
-            <Pin
-              background="#F41D63"
-              borderColor="#9F1239"
-              glyphColor="#FFFFFF"
-              scale={1.15}
-            />
-          </AdvancedMarker>
+            <AdvancedMarker
+              ref={markerRef}
+              position={EYEMAZE_LOCATION.coordinates}
+              title={`${EYEMAZE_LOCATION.businessName} — ${EYEMAZE_LOCATION.addressNepali}`}
+              onClick={() => setInfoOpen((prev) => !prev)}
+            >
+              <Pin
+                background="#F41D63"
+                borderColor="#9F1239"
+                glyphColor="#FFFFFF"
+                scale={1.15}
+              />
+            </AdvancedMarker>
+
+            {/* Hover Preview Thumbnail Overlay */}
+            {hoverPreviewOpen && (
+              <div className="absolute top-4 right-4 z-40 w-56 bg-slate-950/95 border border-rose-500/40 rounded-2xl overflow-hidden shadow-2xl p-2 space-y-1.5 animate-fade-in pointer-events-none">
+                <div className="aspect-[16/9] rounded-xl overflow-hidden bg-slate-900 relative">
+                  <img
+                    src={pressHeroImg}
+                    alt="Eyemaze Press Studio Snapshot"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[9px] font-bold uppercase tracking-wider">
+                    Live Studio Feed
+                  </div>
+                </div>
+                <p className="text-[11px] font-bold text-white px-1 leading-tight">
+                  {EYEMAZE_LOCATION.addressNepali}
+                </p>
+                <p className="text-[10px] text-slate-300 px-1 font-mono">
+                  Heidelberg Press &amp; Design Desk
+                </p>
+              </div>
+            )}
+          </div>
 
           {infoOpen && marker && (
             <InfoWindow
@@ -190,7 +242,10 @@ export const EyemazeLocationMap: React.FC = () => {
   );
   const [mapType, setMapType] = useState<MapTypeMode>('hybrid');
   const [recenterSignal, setRecenterSignal] = useState(0);
+  const [followUserSignal, setFollowUserSignal] = useState(0);
   const [mapError, setMapError] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(18);
+  const [trafficLayerActive, setTrafficLayerActive] = useState(false);
 
   useEffect(() => {
     const markFailed = () => setMapError(true);
@@ -247,45 +302,48 @@ export const EyemazeLocationMap: React.FC = () => {
   }, []);
 
   const fallbackCard = (
-    <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-4 bg-[radial-gradient(circle_at_top,_rgba(244,29,99,0.14),_transparent_65%)]">
-      <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/30">
-        <MapPin className="w-6 h-6" />
-      </div>
-      <div className="space-y-1.5 max-w-md">
-        <p className="text-base font-bold text-white">
-          {EYEMAZE_LOCATION.businessName} — {EYEMAZE_LOCATION.addressNepali}
-        </p>
-        <p className="text-xs text-slate-300">
-          {EYEMAZE_LOCATION.addressEnglish} · {EYEMAZE_LOCATION.locality}{' '}
-          {EYEMAZE_LOCATION.postalCode}
-        </p>
-        <p className="text-xs text-slate-400 font-mono">
-          GPS: {EYEMAZE_LOCATION.coordinates.lat}° N, {EYEMAZE_LOCATION.coordinates.lng}° E · Plus
-          Code {EYEMAZE_LOCATION.plusCode}
-        </p>
-        {!keyChecked && (
-          <p className="text-xs text-slate-500 pt-1">Loading interactive map…</p>
-        )}
-      </div>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <a
-          href={EYEMAZE_LOCATION.googleMapsPlaceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors"
-        >
-          <span>View Pin on Google Maps</span>
-          <ExternalLink className="w-3.5 h-3.5" />
-        </a>
-        <a
-          href={EYEMAZE_LOCATION.googleMapsDirectionsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
-        >
-          <Navigation className="w-3.5 h-3.5 text-rose-400" />
-          <span>Get Directions</span>
-        </a>
+    <div className="w-full h-full relative flex flex-col bg-slate-950">
+      <iframe
+        title="Eyemaze Graphics Enterprises Live Map Preview"
+        src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3549.408713291884!2d85.7323897!3d27.2644144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb85373ddf9c4b%3A0xaf6db41acaebe062!2sEyemaze%20Graphics%20Enterprises!5e0!3m2!1sen!2snp!4v1700000000000!5m2!1sen!2snp${trafficLayerActive ? '&layer=t' : ''}`}
+        width="100%"
+        height="100%"
+        style={{ border: 0 }}
+        allowFullScreen={true}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        className="w-full h-full absolute inset-0"
+      />
+      <div className="absolute bottom-4 left-4 right-4 z-10 p-4 rounded-2xl bg-slate-950/90 backdrop-blur-md border border-white/15 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="space-y-1 text-center sm:text-left">
+          <p className="font-bold text-white flex items-center justify-center sm:justify-start gap-1.5">
+            <MapPin className="w-4 h-4 text-rose-500 shrink-0" />
+            <span>{EYEMAZE_LOCATION.businessName} · {EYEMAZE_LOCATION.addressNepali}</span>
+          </p>
+          <p className="text-[11px] text-slate-300 font-mono">
+            GPS: {EYEMAZE_LOCATION.coordinates.lat}° N, {EYEMAZE_LOCATION.coordinates.lng}° E · Plus Code {EYEMAZE_LOCATION.plusCode}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href={EYEMAZE_LOCATION.googleMapsPlaceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors inline-flex items-center gap-1.5 shadow-md"
+          >
+            <span>Open Maps App</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+          <a
+            href={EYEMAZE_LOCATION.googleMapsDirectionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition-colors inline-flex items-center gap-1.5"
+          >
+            <Navigation className="w-3.5 h-3.5 text-rose-400" />
+            <span>Directions</span>
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -310,7 +368,7 @@ export const EyemazeLocationMap: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Map Mode Toggle */}
+          {/* Map Mode & Traffic / Terrain Toggle */}
           <div className="inline-flex rounded-xl bg-slate-950 p-1 border border-slate-800 text-xs">
             <button
               type="button"
@@ -337,6 +395,31 @@ export const EyemazeLocationMap: React.FC = () => {
             </button>
           </div>
 
+          {/* Traffic Layer Toggle */}
+          <button
+            type="button"
+            onClick={() => setTrafficLayerActive(!trafficLayerActive)}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-colors cursor-pointer ${
+              trafficLayerActive
+                ? 'bg-amber-600 text-white border-amber-500'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+            }`}
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>Traffic</span>
+          </button>
+
+          {/* Follow Device Location Toggle */}
+          <button
+            type="button"
+            onClick={() => setFollowUserSignal((s) => s + 1)}
+            className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors cursor-pointer"
+            title="Follow current device location"
+          >
+            <LocateFixed className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Follow GPS</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setRecenterSignal((s) => s + 1)}
@@ -360,12 +443,33 @@ export const EyemazeLocationMap: React.FC = () => {
 
       {/* Interactive Map Canvas (Explicit height required per CF2) */}
       <div className="w-full h-[360px] sm:h-[420px] relative bg-slate-950">
+        {/* Custom Zoom Controls Overlay */}
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1.5 bg-slate-950/80 backdrop-blur-md p-1 rounded-xl border border-white/15 shadow-xl">
+          <button
+            type="button"
+            onClick={() => setZoomLevel((z) => Math.min(21, z + 1))}
+            aria-label="Zoom in"
+            className="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setZoomLevel((z) => Math.max(10, z - 1))}
+            aria-label="Zoom out"
+            className="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+        </div>
+
         <MapErrorBoundary fallback={fallbackCard} onError={handleQuotaOrAuthError}>
           {apiKey && !mapError ? (
             <APIProvider apiKey={apiKey} libraries={['marker']} language="en" region="NP">
               <StudioMapCanvas
                 mapType={mapType}
                 recenterSignal={recenterSignal}
+                followUserSignal={followUserSignal}
                 onQuotaOrAuthError={handleQuotaOrAuthError}
               />
             </APIProvider>

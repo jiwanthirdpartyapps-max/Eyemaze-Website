@@ -183,6 +183,22 @@ async function startServer() {
     res.json({ apiKey });
   });
 
+  // Explicit SEO sitemap & robots routes
+  app.get('/sitemap.xml', (_req, res) => {
+    res.setHeader('Content-Type', 'application/xml');
+    res.sendFile(path.resolve(__dirname, 'public/sitemap.xml'));
+  });
+
+  app.get('/robots.txt', (_req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.sendFile(path.resolve(__dirname, 'public/robots.txt'));
+  });
+
+  app.get('/llms.txt', (_req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.sendFile(path.resolve(__dirname, 'public/llms.txt'));
+  });
+
   // Vite development middleware
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
