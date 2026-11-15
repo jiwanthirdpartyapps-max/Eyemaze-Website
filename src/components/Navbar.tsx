@@ -161,6 +161,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             Contact
           </a>
 
+          <a
+            href="#location-map"
+            className="text-sm font-semibold text-slate-200 hover:text-white transition-colors"
+          >
+            Map
+          </a>
+
           <button
             type="button"
             onClick={isLoggedIn ? onGoToDashboard : onOpenLogin}
@@ -302,6 +309,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="block py-2 text-sm font-semibold text-slate-200 hover:text-white"
           >
             Press Desk Contact
+          </a>
+          <a
+            href="#location-map"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm font-semibold text-rose-400 hover:text-rose-300"
+          >
+            Google Map Location
           </a>
 
           <div className="pt-2 grid grid-cols-2 gap-3">

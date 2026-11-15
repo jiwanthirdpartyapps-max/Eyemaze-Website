@@ -73,10 +73,10 @@ export const FirebaseIntegrationHub: React.FC<FirebaseIntegrationHubProps> = ({ 
   ];
 
   const sampleCustomers = [
-    { id: 'CUST-001', company: 'Aeterna Holdings Pvt Ltd', phone: '+977 1-4240001', pan: '601928471', city: 'Kathmandu' },
+    { id: 'CUST-001', company: 'Marin Agro Cooperative', phone: '+977 9844251392', pan: '601928471', city: 'Sindhuli' },
     { id: 'CUST-002', company: 'Aurelia Botanicals Nepal', phone: '+977 1-5520002', pan: '602819382', city: 'Patan' },
     { id: 'CUST-003', company: 'Adventure Tours Nepal', phone: '+977 61-520003', pan: '603748291', city: 'Pokhara' },
-    { id: 'CUST-004', company: 'Kathmandu FinCorp', phone: '+977 1-4410004', pan: '604859102', city: 'Kathmandu' },
+    { id: 'CUST-004', company: 'Bagmati Press Concern', phone: '+977 9814850300', pan: '604859102', city: 'Sindhuli' },
   ];
 
   const handleRunMigration = () => {

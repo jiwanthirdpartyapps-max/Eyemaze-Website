@@ -27,11 +27,13 @@ import {
   Database,
   LogOut,
   ArrowUpRight,
+  MapPin,
 } from 'lucide-react';
 import { FirebaseIntegrationHub } from './FirebaseIntegrationHub';
 import { VirtualCardsStudio } from './VirtualCardsStudio';
 import { VirtualCard } from './VirtualCard';
 import { listUserVirtualCards } from '../firebase';
+import { EYEMAZE_LOCATION } from '../data/eyemazeLocation';
 import type { VirtualCardTokenized } from '../utils/virtualCardLogic';
 import type { UserProfile, WalletTransaction } from '../utils/dashboardLogic';
 import {
@@ -186,7 +188,7 @@ class MainActivity : AppCompatActivity() {
   // Interactive Transfer / Payment / Airtime / Bank linking state
   const [transferRecipient, setTransferRecipient] = useState('Aeterna Press Settlement');
   const [transferAmount, setTransferAmount] = useState('2500');
-  const [airtimePhone, setAirtimePhone] = useState('9841000000');
+  const [airtimePhone, setAirtimePhone] = useState('9844251392');
   const [airtimeCarrier, setAirtimeCarrier] = useState('NTC');
   const [bankName, setBankName] = useState('Nabil Bank Ltd.');
   const [bankAccountNo, setBankAccountNo] = useState('');
@@ -344,7 +346,21 @@ class MainActivity : AppCompatActivity() {
         </div>
 
         {/* Exit & Sign Out */}
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+          <a
+            href={EYEMAZE_LOCATION.googleMapsPlaceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-800 dark:text-slate-100">
+              <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+              <span className="truncate">{EYEMAZE_LOCATION.addressNepali}</span>
+            </div>
+            <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400 pl-5 mt-0.5">
+              {EYEMAZE_LOCATION.phones.join(' · ')}
+            </p>
+          </a>
           <button
             type="button"
             onClick={onExitToWebsite}

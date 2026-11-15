@@ -304,6 +304,15 @@ export default function App() {
                     </a>
                   </span>
                 </div>
+                <div className="pt-2">
+                  <a
+                    href="#location-map"
+                    className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-400 hover:text-rose-300 transition-colors"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>Open Interactive Google Map ↓</span>
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -408,7 +417,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto mt-12">
+          <div id="location-map" className="max-w-7xl mx-auto mt-12 scroll-mt-24">
             <EyemazeLocationMap />
           </div>
         </section>

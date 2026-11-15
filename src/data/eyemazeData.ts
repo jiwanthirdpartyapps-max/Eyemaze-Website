@@ -121,7 +121,7 @@ export const INITIAL_PRINT_ORDERS: PrintOrder[] = [
   {
     id: 'EYM-4076',
     title: 'Annual Report 2026 Offset Print',
-    client: 'Kathmandu FinCorp',
+    client: 'Sindhuli Commerce Hub',
     category: 'offset-brochures',
     spec: '170 GSM Art Paper · Perfect Bound',
     quantity: 1500,

@@ -129,7 +129,7 @@ export const NetworkTransferSection: React.FC = () => {
                 <circle cx="440" cy="100" r="7" fill="#FF5B14" className="animate-pulse" />
                 <circle cx="440" cy="100" r="16" stroke="#FF5B14" strokeWidth="2" opacity="0.4" />
                 <text x="440" y="125" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="bold" className="text-slate-800 dark:text-slate-200">
-                  Kathmandu Hub
+                  All Nepal Express
                 </text>
               </svg>
             </div>
@@ -155,11 +155,14 @@ export const NetworkTransferSection: React.FC = () => {
                 </span>
               </div>
 
-              {/* 7 Provinces Badge */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm text-slate-700 dark:text-slate-300">
-                <Globe2 className="w-3.5 h-3.5 text-indigo-500" />
-                <span>7 Provinces · 77 Districts</span>
-              </div>
+              {/* Direct Studio Map Anchor */}
+              <a
+                href="#location-map"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-rose-200 dark:border-slate-700 shadow-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                <Globe2 className="w-3.5 h-3.5 text-rose-500" />
+                <span>मरिण–६, छाप Google Map →</span>
+              </a>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import App from './App.tsx';
 import './index.css';
 
 (window as unknown as { gm_authFailure?: () => void }).gm_authFailure = () => {
-  window.dispatchEvent(new CustomEvent('gmp-quota-exceeded'));
+  window.dispatchEvent(new CustomEvent('gmp-auth-failure'));
 };
 
 const origConsoleError = console.error;
@@ -12,6 +12,13 @@ console.error = (...args: unknown[]) => {
   const msg = args.map((a) => String(a)).join(' ');
   if (msg.includes('OverQuotaMapError') || msg.includes('QuotaExceededError')) {
     window.dispatchEvent(new CustomEvent('gmp-quota-exceeded'));
+    window.dispatchEvent(new CustomEvent('gmp-auth-failure'));
+  } else if (
+    msg.includes('RefererNotAllowedMapError') ||
+    msg.includes('InvalidKeyMapError') ||
+    msg.includes('ApiNotActivatedMapError')
+  ) {
+    window.dispatchEvent(new CustomEvent('gmp-auth-failure'));
   }
 };
 

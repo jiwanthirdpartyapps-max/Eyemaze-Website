@@ -142,6 +142,41 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
   );
 };
 
+interface MapErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback: React.ReactNode;
+  onError?: () => void;
+}
+
+interface MapErrorBoundaryState {
+  hasError: boolean;
+}
+
+class MapErrorBoundary extends React.Component<
+  MapErrorBoundaryProps,
+  MapErrorBoundaryState
+> {
+  constructor(props: MapErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): MapErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(): void {
+    this.props.onError?.();
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
 export const EyemazeLocationMap: React.FC = () => {
   const [apiKey, setApiKey] = useState<string>(
     () => (import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined) || ''
@@ -152,6 +187,31 @@ export const EyemazeLocationMap: React.FC = () => {
   const [mapType, setMapType] = useState<MapTypeMode>('hybrid');
   const [recenterSignal, setRecenterSignal] = useState(0);
   const [mapError, setMapError] = useState(false);
+
+  useEffect(() => {
+    const markFailed = () => setMapError(true);
+    const onWindowError = (event: ErrorEvent) => {
+      const msg = String(event.message || '');
+      const src = String(event.filename || '');
+      if (
+        src.includes('maps.googleapis.com') ||
+        src.includes('react-google-maps') ||
+        msg.includes("reading 'keys'")
+      ) {
+        event.preventDefault();
+        setMapError(true);
+      }
+    };
+
+    window.addEventListener('gmp-auth-failure', markFailed);
+    window.addEventListener('gmp-quota-exceeded', markFailed);
+    window.addEventListener('error', onWindowError);
+    return () => {
+      window.removeEventListener('gmp-auth-failure', markFailed);
+      window.removeEventListener('gmp-quota-exceeded', markFailed);
+      window.removeEventListener('error', onWindowError);
+    };
+  }, []);
 
   useEffect(() => {
     if (apiKey) {
@@ -179,6 +239,50 @@ export const EyemazeLocationMap: React.FC = () => {
   const handleQuotaOrAuthError = useCallback(() => {
     setMapError(true);
   }, []);
+
+  const fallbackCard = (
+    <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-4 bg-[radial-gradient(circle_at_top,_rgba(244,29,99,0.14),_transparent_65%)]">
+      <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/30">
+        <MapPin className="w-6 h-6" />
+      </div>
+      <div className="space-y-1.5 max-w-md">
+        <p className="text-base font-bold text-white">
+          {EYEMAZE_LOCATION.businessName} — {EYEMAZE_LOCATION.addressNepali}
+        </p>
+        <p className="text-xs text-slate-300">
+          {EYEMAZE_LOCATION.addressEnglish} · {EYEMAZE_LOCATION.locality}{' '}
+          {EYEMAZE_LOCATION.postalCode}
+        </p>
+        <p className="text-xs text-slate-400 font-mono">
+          GPS: {EYEMAZE_LOCATION.coordinates.lat}° N, {EYEMAZE_LOCATION.coordinates.lng}° E · Plus
+          Code {EYEMAZE_LOCATION.plusCode}
+        </p>
+        {!keyChecked && (
+          <p className="text-xs text-slate-500 pt-1">Loading interactive map…</p>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <a
+          href={EYEMAZE_LOCATION.googleMapsPlaceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors"
+        >
+          <span>View Pin on Google Maps</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </a>
+        <a
+          href={EYEMAZE_LOCATION.googleMapsDirectionsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+        >
+          <Navigation className="w-3.5 h-3.5 text-rose-400" />
+          <span>Get Directions</span>
+        </a>
+      </div>
+    </div>
+  );
 
   return (
     <div className="bg-slate-900 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
@@ -251,52 +355,17 @@ export const EyemazeLocationMap: React.FC = () => {
       {/* Interactive Map Canvas (Explicit height required per CF2) */}
       <div className="w-full h-[360px] sm:h-[420px] relative bg-slate-950">
         {apiKey && !mapError ? (
-          <APIProvider apiKey={apiKey} libraries={['marker']} language="en" region="NP">
-            <StudioMapCanvas
-              mapType={mapType}
-              recenterSignal={recenterSignal}
-              onQuotaOrAuthError={handleQuotaOrAuthError}
-            />
-          </APIProvider>
+          <MapErrorBoundary fallback={fallbackCard} onError={handleQuotaOrAuthError}>
+            <APIProvider apiKey={apiKey} libraries={['marker']} language="en" region="NP">
+              <StudioMapCanvas
+                mapType={mapType}
+                recenterSignal={recenterSignal}
+                onQuotaOrAuthError={handleQuotaOrAuthError}
+              />
+            </APIProvider>
+          </MapErrorBoundary>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
-              <MapPin className="w-6 h-6" />
-            </div>
-            <div className="space-y-1 max-w-md">
-              <p className="text-base font-bold text-white">
-                {EYEMAZE_LOCATION.businessName} — {EYEMAZE_LOCATION.addressNepali}
-              </p>
-              <p className="text-xs text-slate-400 font-mono">
-                {EYEMAZE_LOCATION.coordinates.lat}° N, {EYEMAZE_LOCATION.coordinates.lng}° E ·{' '}
-                {EYEMAZE_LOCATION.plusCode}, {EYEMAZE_LOCATION.locality}{' '}
-                {EYEMAZE_LOCATION.postalCode}
-              </p>
-              {!keyChecked && (
-                <p className="text-xs text-slate-500 pt-1">Loading interactive map…</p>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <a
-                href={EYEMAZE_LOCATION.googleMapsPlaceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors"
-              >
-                <span>View Pin on Google Maps</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-              <a
-                href={EYEMAZE_LOCATION.googleMapsDirectionsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
-              >
-                <Navigation className="w-3.5 h-3.5 text-rose-400" />
-                <span>Navigate Here</span>
-              </a>
-            </div>
-          </div>
+          fallbackCard
         )}
       </div>
 
