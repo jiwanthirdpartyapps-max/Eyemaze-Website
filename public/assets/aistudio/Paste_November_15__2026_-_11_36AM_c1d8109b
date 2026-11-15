@@ -1,0 +1,1268 @@
+# EYEMAZE GRAPHICS ENTERPRISES
+## Complete Website Modernization & Digital Transformation Blueprint
+
+**Project:** Eyemaze Website Upgrade  
+**Domain:** https://www.eyemaze.com.np/  
+**Document:** PRD + TRD + UI/UX + Branding + Backend Architecture + Database Schema  
+**Product Type:** Corporate Website + Creative Portfolio + Printing Service Enquiry Platform
+
+---
+
+# PART 1 — PRODUCT VISION
+
+## 1.1 Project Vision
+
+Transform the Eyemaze website into a modern, premium, responsive and professionally managed digital platform that represents the company's creative design, printing and business identity.
+
+The website should communicate three things:
+
+1. Eyemaze as a professional creative design brand.
+2. Eyemaze as a reliable printing and production service provider.
+3. Eyemaze as a customer-friendly business where customers can discover services, explore previous work and request quotations.
+
+## 1.2 Brand Positioning
+
+**Brand Name:** Eyemaze
+
+**Business Category:** Creative Design, Graphics & Printing Solutions.
+
+**Suggested Brand Tagline:**
+
+"Imagine. Design. Print."
+
+Alternative:
+
+"Your Vision, Our Creation."
+
+Nepali alternative:
+
+"तपाईंको कल्पना, हाम्रो सिर्जना।"
+
+## 1.3 Main Product Objectives
+
+- Establish a consistent and recognizable brand identity.
+- Make the website visually premium and professionally designed.
+- Showcase completed projects through high-quality portfolio presentations.
+- Improve service discovery and customer enquiries.
+- Create an easy quotation request system.
+- Support Nepali and English languages.
+- Make all important website content manageable from an admin dashboard.
+- Improve search engine visibility.
+- Ensure responsive performance across mobile, tablet and desktop.
+
+---
+
+# PART 2 — PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+## 2.1 Target Users
+
+### Customer Type A: Individual Customers
+People looking for graphic design, invitations, personal printing and customized printing services.
+
+### Customer Type B: Businesses
+Companies requiring branding, stationery, business cards, promotional materials and printing.
+
+### Customer Type C: Organizations
+Schools, colleges, institutions, NGOs and other organizations requiring bulk printing and design work.
+
+### Customer Type D: Repeat Customers
+Customers who regularly request the same or similar services.
+
+## 2.2 Core User Problems
+
+The platform should solve these problems:
+
+- Customers cannot quickly understand all available services.
+- Customers need visual examples before ordering.
+- Customers need an easy way to discuss printing specifications.
+- Customers need to submit designs or reference files.
+- Customers need to contact the business without unnecessary navigation.
+- The business needs a centralized way to manage enquiries and portfolio content.
+
+## 2.3 Product Scope
+
+### MVP — Essential Features
+
+| ID | Feature | Priority |
+|---|---|---|
+| P-01 | Modern Homepage | Critical |
+| P-02 | Responsive Navigation | Critical |
+| P-03 | Services Directory | Critical |
+| P-04 | Portfolio Gallery | Critical |
+| P-05 | Portfolio Detail Pages | High |
+| P-06 | About Eyemaze | High |
+| P-07 | Quote Request Form | Critical |
+| P-08 | WhatsApp Contact Integration | Critical |
+| P-09 | Contact Page | Critical |
+| P-10 | Admin Dashboard | Critical |
+| P-11 | SEO Management | High |
+| P-12 | Nepali / English Language | High |
+| P-13 | FAQ Management | Medium |
+| P-14 | Testimonial Management | Medium |
+| P-15 | Company Profile Download | Medium |
+
+### Phase 2 — Advanced Features
+
+- Customer enquiry tracking.
+- Printing specification calculator.
+- Customer account system.
+- Online quotation approval.
+- Order tracking.
+- Invoice and quotation PDF generation.
+- Advanced portfolio filtering.
+- Blog and design resources.
+- Email notifications.
+- Advanced analytics.
+
+### Phase 3 — Business Expansion
+
+- Product catalogue.
+- Online product ordering.
+- Shopping cart, if stock and fulfilment processes are ready.
+- Payment integration.
+- Customer order history.
+- Automated order notifications.
+- Inventory integration with the company's business management software.
+
+---
+
+# PART 3 — WEBSITE INFORMATION ARCHITECTURE
+
+## 3.1 Main Navigation
+
+Recommended navigation structure:
+
+1. Home
+2. About Us
+3. Services
+4. Portfolio
+5. Our Process
+6. Contact
+7. Get a Quote
+
+Header actions:
+- Language switcher.
+- WhatsApp contact.
+- Get a Quote button.
+
+## 3.2 Proposed Website Pages
+
+### Page 01 — Homepage
+
+The homepage should function as the main brand presentation.
+
+Recommended section order:
+
+1. Announcement strip.
+2. Main navigation.
+3. Hero section.
+4. Featured services.
+5. Company introduction.
+6. Featured portfolio.
+7. Why Choose Eyemaze.
+8. Our Working Process.
+9. Production capabilities.
+10. Customer testimonials.
+11. Frequently Asked Questions.
+12. Final Call to Action.
+13. Complete footer.
+
+### Page 02 — About Us
+
+Sections:
+- Company introduction.
+- Brand story.
+- Mission and vision.
+- Core values.
+- Design and production capabilities.
+- Team presentation, where appropriate.
+- Company profile download.
+
+Do not publish unverified claims about experience, employee count or production capacity.
+
+### Page 03 — Services
+
+Use individual service pages instead of putting every service into one very long page.
+
+Suggested categories:
+
+**Printing Services**
+- Offset Printing.
+- Digital Printing.
+- Screen Printing.
+- Other verified printing services.
+
+**Creative Design**
+- Graphic Design.
+- Branding and Identity Design.
+- Marketing Design.
+- Promotional Artwork.
+
+**Business & Stationery**
+- Business Stationery.
+- Office Supplies.
+- Other verified products and services.
+
+Each service should include:
+
+- Service introduction.
+- Suitable applications.
+- Available specifications.
+- Related portfolio.
+- Enquiry button.
+- FAQ.
+
+### Page 04 — Portfolio
+
+This should be one of the most visually important sections.
+
+Portfolio categories:
+- Graphic Design.
+- Branding.
+- Business Stationery.
+- Offset Printing.
+- Digital Printing.
+- Screen Printing.
+- Promotional Designs.
+- Other completed work.
+
+Portfolio functionality:
+
+- Category filters.
+- Search.
+- Grid and masonry layouts.
+- Image lightbox.
+- Full project details.
+- Related projects.
+- Project enquiry button.
+
+### Page 05 — Portfolio Detail
+
+Every project should have its own professional page.
+
+Content:
+
+- Project title.
+- Category.
+- Brief description.
+- Project objectives.
+- Final design.
+- Mockup presentations.
+- Actual printed output photographs.
+- Related projects.
+
+Important: Clearly distinguish actual completed work from illustrative mockups.
+
+### Page 06 — Request a Quote
+
+This is the primary conversion page.
+
+Form fields:
+
+- Full Name.
+- Phone Number.
+- Email Address.
+- Service Category.
+- Product / Project Name.
+- Quantity.
+- Required Size.
+- Material / Paper Type.
+- Printing Colour.
+- Single-sided / Double-sided.
+- Finishing Requirements.
+- Required Delivery Date.
+- Additional Instructions.
+- File Attachments.
+
+Submit button: Request Quotation.
+
+After submission:
+- Generate enquiry reference number.
+- Show confirmation message.
+- Notify administrator.
+- Send confirmation to customer where email is provided.
+
+### Page 07 — Contact Us
+
+Include:
+
+- Business contact details.
+- Address and location.
+- Google Maps.
+- Phone contact.
+- WhatsApp.
+- Email.
+- Working hours.
+- Contact enquiry form.
+
+All contact details should be verified with the business owner before publication.
+
+---
+
+# PART 4 — BRAND IDENTITY & VISUAL DESIGN SYSTEM
+
+## 4.1 Recommended Art Direction
+
+**Design Direction:** Modern Creative Printing Studio.
+
+The brand should feel:
+
+- Professional.
+- Creative.
+- Premium.
+- Trustworthy.
+- Modern.
+- Production-focused.
+
+Avoid generic corporate templates, excessive gradients, excessive animations and cluttered sections.
+
+## 4.2 Proposed Colour Palette
+
+Use a dark neutral foundation with restrained printing-inspired CMYK accents.
+
+| Colour | HEX | Application |
+|---|---|---|
+| Ink Black | #121826 | Main headings |
+| Deep Navy | #17243A | Dark sections |
+| Cyan | #00A6C7 | Primary brand accent |
+| Magenta | #E83E8C | Creative highlights |
+| Print Yellow | #F4C542 | Small highlights |
+| White | #FFFFFF | Main surfaces |
+| Soft Grey | #F5F7FA | Background |
+| Text Grey | #667085 | Secondary text |
+| Border Grey | #E5E7EB | Borders |
+
+### Colour Usage Rules
+
+- Cyan should be the primary interactive colour.
+- Magenta and yellow should be occasional supporting accents.
+- Dark neutral colours should provide visual stability.
+- Avoid applying all three CMY colours to every button and section.
+- Test text and background combinations for accessibility.
+
+## 4.3 Typography
+
+Recommended font pairing:
+
+**English**
+- Inter or Manrope.
+
+**Nepali**
+- Noto Sans Devanagari.
+
+Typography hierarchy:
+
+- H1: 56–68px desktop.
+- H2: 36–44px desktop.
+- H3: 24–30px.
+- Body: 16–18px.
+- Small labels: 12–14px.
+
+Adjust sizes responsively for mobile.
+
+## 4.4 Logo System
+
+Prepare:
+
+- Primary logo.
+- Horizontal logo.
+- Vertical logo.
+- Icon-only logo.
+- Dark background version.
+- Light background version.
+- Monochrome version.
+- Favicon.
+- Social media profile logo.
+
+Preserve the existing logo if it is already established and recognizable. Redesign only after reviewing the original vector artwork.
+
+---
+
+# PART 5 — UI/UX DESIGN SPECIFICATION
+
+## 5.1 Header
+
+Design:
+
+- Logo on the left.
+- Navigation in the centre.
+- Language selector.
+- Contact button.
+- Get a Quote CTA.
+
+Behaviour:
+
+- Sticky header.
+- Transparent or light initial appearance depending on the hero background.
+- Solid surface after scrolling.
+- Mobile hamburger navigation.
+
+## 5.2 Homepage Hero
+
+Suggested headline:
+
+"Creative Ideas. Professional Design. Quality Printing."
+
+Supporting text:
+
+"From creative concepts to professionally printed materials, Eyemaze brings design and printing solutions together."
+
+Primary CTA:
+Explore Our Services.
+
+Secondary CTA:
+View Our Portfolio.
+
+Hero image direction:
+A high-quality editorial composition of real printed materials, stationery, brochures, business cards and carefully arranged design outputs.
+
+Avoid using generic stock photos where genuine Eyemaze work can be photographed.
+
+## 5.3 Service Cards
+
+Use a consistent card design.
+
+Each card should include:
+
+- Service image.
+- Category label.
+- Service name.
+- Short description.
+- Explore Service link.
+
+Interactions:
+- Subtle hover elevation.
+- Smooth image zoom.
+- Accessible focus state.
+
+## 5.4 Portfolio Gallery
+
+Recommended layout:
+
+- Editorial masonry grid.
+- Large featured project.
+- Consistent aspect ratios.
+- Category filtering.
+- Full-screen image viewer.
+
+Portfolio thumbnails:
+1200 × 900px minimum recommended export.
+
+Project detail images:
+1600px or higher where practical.
+
+Use WebP or AVIF for optimized delivery, while preserving original source files.
+
+## 5.5 Micro-interactions
+
+Implement:
+
+- Button hover states.
+- Card hover states.
+- Navigation transitions.
+- Gallery transitions.
+- Form validation feedback.
+- Upload progress.
+- Success notifications.
+- Skeleton loading.
+- Accessible keyboard focus.
+
+Animations must remain subtle and should respect reduced-motion settings.
+
+## 5.6 Responsive Design
+
+Desktop:
+1440px and above.
+
+Laptop:
+1024–1439px.
+
+Tablet:
+768–1023px.
+
+Mobile:
+320–767px.
+
+Requirements:
+- No horizontal overflow.
+- Readable text.
+- Touch-friendly buttons.
+- Proper image cropping.
+- Mobile-first enquiry experience.
+- Fixed mobile enquiry CTA where appropriate.
+
+---
+
+# PART 6 — BRAND MOCKUP & CREATIVE ASSET REQUIREMENTS
+
+The website should not depend only on generic images.
+
+Prepare a dedicated Eyemaze visual asset collection.
+
+## 6.1 Essential Mockup Collection
+
+1. Business Card Mockup.
+2. Letterhead Mockup.
+3. Envelope Mockup.
+4. Brochure Mockup.
+5. Poster Mockup.
+6. Flyer Mockup.
+7. Product Packaging Mockup.
+8. Stationery Set Mockup.
+9. Branding Identity Presentation.
+10. Promotional Material Mockup.
+11. Printing Output Photography.
+12. Design Workspace Photography.
+
+All artwork should follow the approved Eyemaze brand identity.
+
+## 6.2 Portfolio Presentation Standards
+
+Each portfolio project should have:
+
+- Cover image.
+- Main artwork.
+- Mockup preview.
+- Actual production photograph where available.
+- Short project description.
+- Service category.
+- Project completion information.
+
+Do not use invented client names, project results or testimonials.
+
+## 6.3 Company Presentation Slide Deck
+
+Create a separate professional company profile presentation.
+
+Suggested 10-slide structure:
+
+1. Eyemaze — Cover.
+2. About the Company.
+3. Our Creative Philosophy.
+4. Our Services.
+5. Design Capabilities.
+6. Printing Capabilities.
+7. Selected Portfolio.
+8. Our Workflow.
+9. Why Choose Eyemaze.
+10. Contact Information.
+
+Prepare:
+- 16:9 presentation version.
+- PDF version.
+- High-resolution individual slide exports.
+
+The presentation should be consistent with the website's brand identity.
+
+---
+
+# PART 7 — PRODUCT REQUIREMENTS FOR ADMIN DASHBOARD
+
+The admin dashboard is essential.
+
+Website content should not require developer involvement for every small change.
+
+## 7.1 Dashboard Overview
+
+Display:
+
+- Total enquiries.
+- New enquiries.
+- Pending quotations.
+- Completed enquiries.
+- Published projects.
+- Published services.
+- Recent messages.
+
+## 7.2 Content Management
+
+Admin should be able to:
+
+- Add and edit services.
+- Publish and unpublish services.
+- Add portfolio projects.
+- Upload multiple project images.
+- Change portfolio categories.
+- Rearrange project order.
+- Feature selected projects.
+- Edit homepage content.
+- Manage FAQs.
+- Manage testimonials.
+- Update contact information.
+- Manage SEO metadata.
+- Change Nepali and English content.
+
+## 7.3 Enquiry Management
+
+Admin should be able to:
+
+- View all enquiries.
+- Search by customer name and reference number.
+- Filter by service.
+- Open enquiry details.
+- Download attachments.
+- Update status.
+- Assign enquiries to staff.
+- Add internal notes.
+- Generate quotations.
+- Contact customers.
+
+Recommended enquiry statuses:
+
+NEW → REVIEWING → QUOTED → APPROVED → IN_PRODUCTION → READY → COMPLETED.
+
+Additional statuses:
+CANCELLED and REJECTED.
+
+---
+
+# PART 8 — TECHNICAL REQUIREMENTS DOCUMENT (TRD)
+
+## 8.1 Recommended Technology Stack
+
+### Frontend
+
+- Next.js.
+- React.
+- TypeScript.
+- Tailwind CSS.
+- Reusable UI component library.
+- Responsive image handling.
+
+### Backend
+
+- Next.js API / server-side application layer.
+- REST API.
+- PostgreSQL.
+- Prisma ORM.
+- Role-based authentication.
+- Server-side validation.
+
+### File Storage
+
+S3-compatible object storage or Cloudflare R2.
+
+Use separate storage policies for:
+- Public portfolio images.
+- Private customer attachments.
+- Admin-only documents.
+
+### Infrastructure
+
+- HTTPS.
+- Domain and DNS management.
+- CDN.
+- Production and staging environments.
+- Automated database backup.
+- Error monitoring.
+
+### Architecture Decision
+
+First identify the existing website's CMS, hosting and source code.
+
+If the existing platform is WordPress and its content management capabilities are sufficient, improving its theme and adding custom functionality may be more economical.
+
+If the website needs the complete custom quotation workflow, advanced admin panel and scalable architecture described here, a custom Next.js and PostgreSQL implementation is recommended.
+
+Do not migrate platforms until the current hosting, CMS, domain and database have been audited.
+
+## 8.2 High-Level Architecture
+
+Browser / Mobile
+       |
+       v
+Frontend Application
+       |
+       v
+Application Backend / API
+       |
+       +---- PostgreSQL Database
+       |
+       +---- File Storage
+       |
+       +---- Email Notification
+       |
+       +---- Admin Authentication
+       |
+       +---- Analytics
+
+## 8.3 Main Application Modules
+
+1. Authentication Module.
+2. Content Management Module.
+3. Service Management Module.
+4. Portfolio Management Module.
+5. Customer Management Module.
+6. Quote Request Module.
+7. File Management Module.
+8. Notification Module.
+9. SEO Module.
+10. Analytics Module.
+11. Audit Log Module.
+
+---
+
+# PART 9 — BACKEND DATABASE SCHEMA
+
+Use PostgreSQL with UUID primary keys.
+
+## 9.1 users
+
+Stores administrator and authorized staff accounts.
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- full_name: VARCHAR(150)
+- email: VARCHAR(255) UNIQUE
+- password_hash: TEXT
+- role: VARCHAR(30)
+- is_active: BOOLEAN
+- created_at: TIMESTAMPTZ
+- updated_at: TIMESTAMPTZ
+
+Roles:
+SUPER_ADMIN, ADMIN, EDITOR, STAFF.
+
+## 9.2 customers
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- full_name: VARCHAR(150)
+- email: VARCHAR(255)
+- phone: VARCHAR(30)
+- organization: VARCHAR(200)
+- address: TEXT
+- preferred_contact: VARCHAR(20)
+- created_at: TIMESTAMPTZ
+- updated_at: TIMESTAMPTZ
+
+## 9.3 service_categories
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- name_en: VARCHAR(150)
+- name_ne: VARCHAR(150)
+- slug: VARCHAR(180) UNIQUE
+- description: TEXT
+- display_order: INTEGER
+- is_active: BOOLEAN
+
+## 9.4 services
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- category_id: UUID REFERENCES service_categories(id)
+- title_en: VARCHAR(200)
+- title_ne: VARCHAR(200)
+- slug: VARCHAR(200) UNIQUE
+- description_en: TEXT
+- description_ne: TEXT
+- specifications: JSONB
+- is_published: BOOLEAN
+- display_order: INTEGER
+- created_at: TIMESTAMPTZ
+- updated_at: TIMESTAMPTZ
+
+## 9.5 media_assets
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- storage_key: TEXT
+- original_filename: TEXT
+- mime_type: VARCHAR(100)
+- file_size: BIGINT
+- width: INTEGER
+- height: INTEGER
+- alt_text_en: TEXT
+- alt_text_ne: TEXT
+- uploaded_by: UUID REFERENCES users(id)
+- created_at: TIMESTAMPTZ
+
+## 9.6 portfolio_projects
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- category_id: UUID REFERENCES service_categories(id)
+- title: VARCHAR(200)
+- slug: VARCHAR(200) UNIQUE
+- summary: TEXT
+- description: TEXT
+- client_name: VARCHAR(200)
+- is_featured: BOOLEAN
+- is_published: BOOLEAN
+- published_at: TIMESTAMPTZ
+- created_at: TIMESTAMPTZ
+- updated_at: TIMESTAMPTZ
+
+## 9.7 portfolio_media
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- project_id: UUID REFERENCES portfolio_projects(id)
+- media_id: UUID REFERENCES media_assets(id)
+- media_role: VARCHAR(30)
+- display_order: INTEGER
+
+Media roles:
+COVER, ARTWORK, MOCKUP, PRODUCTION_PHOTO.
+
+## 9.8 quote_requests
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- reference_code: VARCHAR(40) UNIQUE
+- customer_id: UUID REFERENCES customers(id)
+- status: VARCHAR(30)
+- requested_deadline: DATE
+- budget_min: NUMERIC(12,2)
+- budget_max: NUMERIC(12,2)
+- customer_notes: TEXT
+- assigned_to: UUID REFERENCES users(id)
+- created_at: TIMESTAMPTZ
+- updated_at: TIMESTAMPTZ
+
+## 9.9 quote_items
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- quote_request_id: UUID REFERENCES quote_requests(id)
+- service_id: UUID REFERENCES services(id)
+- product_description: TEXT
+- quantity: INTEGER
+- unit: VARCHAR(30)
+- width: NUMERIC(10,2)
+- height: NUMERIC(10,2)
+- size_unit: VARCHAR(10)
+- paper_material: VARCHAR(150)
+- paper_gsm: INTEGER
+- color_mode: VARCHAR(30)
+- printing_sides: VARCHAR(30)
+- finishing: JSONB
+- additional_specs: JSONB
+
+## 9.10 quote_attachments
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- quote_request_id: UUID REFERENCES quote_requests(id)
+- media_id: UUID REFERENCES media_assets(id)
+- file_category: VARCHAR(30)
+- created_at: TIMESTAMPTZ
+
+## 9.11 quote_status_history
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- quote_request_id: UUID REFERENCES quote_requests(id)
+- old_status: VARCHAR(30)
+- new_status: VARCHAR(30)
+- changed_by: UUID REFERENCES users(id)
+- notes: TEXT
+- created_at: TIMESTAMPTZ
+
+## 9.12 contact_messages
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- full_name: VARCHAR(150)
+- email: VARCHAR(255)
+- phone: VARCHAR(30)
+- subject: VARCHAR(200)
+- message: TEXT
+- status: VARCHAR(30)
+- created_at: TIMESTAMPTZ
+
+## 9.13 testimonials
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- customer_name: VARCHAR(150)
+- organization: VARCHAR(200)
+- testimonial: TEXT
+- is_featured: BOOLEAN
+- is_published: BOOLEAN
+- display_order: INTEGER
+- created_at: TIMESTAMPTZ
+
+## 9.14 faq_items
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- question_en: TEXT
+- question_ne: TEXT
+- answer_en: TEXT
+- answer_ne: TEXT
+- display_order: INTEGER
+- is_published: BOOLEAN
+
+## 9.15 site_pages
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- page_key: VARCHAR(100) UNIQUE
+- title_en: VARCHAR(200)
+- title_ne: VARCHAR(200)
+- content_en: JSONB
+- content_ne: JSONB
+- seo_title_en: VARCHAR(200)
+- seo_title_ne: VARCHAR(200)
+- seo_description_en: TEXT
+- seo_description_ne: TEXT
+- updated_at: TIMESTAMPTZ
+- updated_by: UUID REFERENCES users(id)
+
+## 9.16 audit_logs
+
+Fields:
+
+- id: UUID PRIMARY KEY
+- user_id: UUID REFERENCES users(id)
+- action: VARCHAR(100)
+- entity_type: VARCHAR(100)
+- entity_id: UUID
+- metadata: JSONB
+- created_at: TIMESTAMPTZ
+
+Database rules:
+
+- Add indexes for frequently searched fields.
+- Use foreign keys.
+- Use transaction-safe status updates.
+- Keep an audit trail of important administrative changes.
+- Use UTC timestamps internally and Asia/Kathmandu for presentation.
+- Use soft deletion for content where historical records must remain available.
+
+---
+
+# PART 10 — API SPECIFICATION
+
+Public API:
+
+GET /api/services
+
+GET /api/services/:slug
+
+GET /api/portfolio
+
+GET /api/portfolio/:slug
+
+GET /api/portfolio/categories
+
+GET /api/faqs
+
+POST /api/quote-requests
+
+POST /api/contact
+
+POST /api/uploads/presign
+
+Admin API:
+
+POST /api/admin/auth/login
+
+GET /api/admin/dashboard
+
+GET /api/admin/quotes
+
+PATCH /api/admin/quotes/:id/status
+
+GET /api/admin/portfolio
+
+POST /api/admin/portfolio
+
+PATCH /api/admin/portfolio/:id
+
+DELETE /api/admin/portfolio/:id
+
+POST /api/admin/services
+
+PATCH /api/admin/services/:id
+
+GET /api/admin/customers
+
+GET /api/admin/messages
+
+GET /api/admin/settings
+
+All administrative routes must require authorization.
+
+All inputs must be validated on the server.
+
+---
+
+# PART 11 — CUSTOMER QUOTATION WORKFLOW
+
+Customer Journey:
+
+1. Customer opens the website.
+2. Explores available services.
+3. Selects a service.
+4. Opens the quotation form.
+5. Enters printing specifications.
+6. Uploads artwork or reference files.
+7. Submits the request.
+8. Receives an enquiry reference number.
+9. Administrator reviews the enquiry.
+10. Administrator prepares the quotation.
+11. Customer receives the quotation.
+12. Customer confirms or rejects the quotation.
+13. Approved work progresses through production statuses.
+14. Order is marked ready and eventually completed.
+
+A quotation is not an automatic price promise. Final pricing should be confirmed by authorized staff based on actual production specifications.
+
+---
+
+# PART 12 — SECURITY & PERFORMANCE
+
+## Security
+
+- HTTPS everywhere.
+- Secure admin authentication.
+- Role-based access control.
+- Password hashing.
+- Server-side validation.
+- Rate limiting.
+- Spam protection.
+- File type validation.
+- Attachment size restrictions.
+- Private file access using expiring signed links.
+- Secure session cookies.
+- CSRF protection where applicable.
+- Content Security Policy.
+- Regular backups.
+- Audit logging.
+- Minimal customer-data retention.
+
+Do not expose customer-uploaded artwork or private contact details publicly.
+
+## Performance
+
+Targets for the production website:
+
+- LCP: 2.5 seconds or less.
+- INP: 200 milliseconds or less.
+- CLS: 0.1 or less.
+
+Implementation:
+
+- Optimized images.
+- Lazy loading.
+- CDN delivery.
+- Font optimization.
+- Reduced JavaScript.
+- Server-side rendering where suitable.
+- Caching.
+- Database indexing.
+- Responsive image sizes.
+
+---
+
+# PART 13 — SEO & DIGITAL PRESENCE
+
+Implement:
+
+- Custom page titles.
+- Meta descriptions.
+- Canonical URLs.
+- XML sitemap.
+- Robots.txt.
+- Open Graph images.
+- Structured data.
+- LocalBusiness schema.
+- Organization schema.
+- Service schema.
+- Breadcrumb schema.
+- Image alt text.
+- Internal linking.
+- Google Search Console.
+- Analytics.
+
+Local SEO should focus on relevant verified business locations and services.
+
+Do not add false ratings, fabricated customer reviews or unverified business details to structured data.
+
+---
+
+# PART 14 — CONTENT MANAGEMENT & WEBSITE GOVERNANCE
+
+The business administrator should control:
+
+- Homepage headings.
+- Homepage images.
+- Service descriptions.
+- Portfolio images.
+- Featured projects.
+- Contact information.
+- FAQs.
+- Testimonials.
+- SEO metadata.
+- Company profile files.
+- Nepali and English translations.
+
+Create image replacement and content preview functionality.
+
+Draft content should not appear publicly until it is published.
+
+---
+
+# PART 15 — ACCEPTANCE CRITERIA
+
+The project is not complete until the following are verified.
+
+### Design Acceptance
+- Consistent branding.
+- Professional visual hierarchy.
+- Complete responsive layouts.
+- Accessible colours and typography.
+- Consistent components.
+
+### Functional Acceptance
+- All navigation links work.
+- Every service detail page loads.
+- Portfolio filters work.
+- Image viewer works.
+- Quote form validates inputs.
+- Attachments upload correctly.
+- Reference number is generated.
+- Admin can view enquiries.
+- Admin can change enquiry status.
+- Admin can publish portfolio items.
+- Language switcher works.
+
+### Technical Acceptance
+- Database constraints are active.
+- Authentication is secure.
+- APIs are validated.
+- Private files remain private.
+- Backup process works.
+- Error handling works.
+- SEO metadata is present.
+- Performance measurements are tested.
+
+### Device Acceptance
+Test on:
+- Android mobile.
+- iPhone.
+- Tablet.
+- Windows desktop.
+- Major modern browsers.
+
+---
+
+# PART 16 — DEVELOPMENT ROADMAP
+
+## Phase 0 — Discovery & Audit
+- Inspect current website source code.
+- Identify current CMS and hosting.
+- Collect logo and brand assets.
+- Audit existing pages.
+- Verify actual services.
+- Collect portfolio material.
+- Finalize requirements.
+
+## Phase 1 — Brand & UX
+- Brand identity refinement.
+- Colour system.
+- Typography.
+- Wireframes.
+- Homepage design.
+- Service page design.
+- Portfolio design.
+- Mobile design.
+
+## Phase 2 — Frontend Development
+- Design system implementation.
+- Header and footer.
+- Homepage.
+- Services.
+- Portfolio.
+- About.
+- Contact.
+- Quotation forms.
+
+## Phase 3 — Backend Development
+- Database.
+- Authentication.
+- CMS.
+- Portfolio APIs.
+- Service APIs.
+- Quote management.
+- Media storage.
+- Notifications.
+
+## Phase 4 — QA & Optimization
+- Functional tests.
+- Responsive testing.
+- Security testing.
+- Accessibility testing.
+- Performance optimization.
+- SEO validation.
+
+## Phase 5 — Production Deployment
+- Domain verification.
+- HTTPS.
+- Database backup.
+- Production configuration.
+- Analytics.
+- Search Console.
+- Launch verification.
+
+---
+
+# PART 17 — FINAL PRIORITY MATRIX
+
+| Upgrade | Priority |
+|---|---|
+| Brand Identity | P0 |
+| Homepage Redesign | P0 |
+| Service Architecture | P0 |
+| Portfolio & Gallery | P0 |
+| Mobile UI/UX | P0 |
+| Quote Request System | P0 |
+| Admin Dashboard | P0 |
+| SEO Foundation | P0 |
+| Mockup & Visual Asset Library | P1 |
+| Company Profile Slide Deck | P1 |
+| Nepali / English CMS | P1 |
+| Enquiry Status Tracking | P1 |
+| Customer Portal | P2 |
+| Online Product Ordering | P2 |
+| Payment Gateway | P2 |
+| Inventory Integration | P3 |
+
+---
+
+# FINAL PRODUCT DEFINITION
+
+Eyemaze should ultimately become a unified digital platform that combines:
+
+1. Corporate Brand Website.
+2. Creative Design Showcase.
+3. Printing Services Catalogue.
+4. Professional Portfolio Platform.
+5. Customer Enquiry & Quotation System.
+6. Content Management System.
+7. Administrative Dashboard.
+8. Future Online Ordering Infrastructure.
+
+**The guiding principle:**
+
+"Do not build a website that only tells visitors what Eyemaze does. Build a platform that visually demonstrates its capabilities, helps customers discover the right service, and makes requesting professional work effortless."
+
+End of Specification.
