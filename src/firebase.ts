@@ -49,7 +49,14 @@ export interface FirestoreErrorInfo {
   };
 }
 
-export const app = initializeApp(firebaseConfig);
+const resolvedAuthDomain =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN?.trim()) ||
+  firebaseConfig.authDomain;
+
+export const app = initializeApp({
+  ...firebaseConfig,
+  authDomain: resolvedAuthDomain,
+});
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 

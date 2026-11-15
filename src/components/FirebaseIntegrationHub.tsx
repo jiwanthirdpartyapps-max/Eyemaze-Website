@@ -336,6 +336,31 @@ export const FirebaseIntegrationHub: React.FC<FirebaseIntegrationHubProps> = ({ 
               </p>
             </div>
           </div>
+
+          {/* Google OAuth Consent Screen & Custom Domain Branding Guide */}
+          <div className="p-5 rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/70 dark:bg-amber-950/20 space-y-3 text-xs">
+            <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-300">
+              <ShieldCheck className="w-4 h-4 text-[#FF5B14] shrink-0" />
+              <span>Google Sign-In मा &quot;Eyemaze Graphics&quot; र आफ्नै Domain देखाउने तरिका</span>
+            </div>
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
+              डिफल्ट रूपमा Google ले <code>numeric-liberty-jwk2q.firebaseapp.com</code> देखाउनुको कारण OAuth Consent Screen को <strong>App Name</strong> र Firebase <code>authDomain</code> हो। यसलाई तपाईंको आफ्नै ब्रान्डमा बदल्न २ स्टेप गर्नुहोस्:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-amber-200/70 dark:border-slate-700 space-y-1">
+                <p className="font-bold text-slate-900 dark:text-white">१. Google Auth Platform Branding</p>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                  Google Cloud Console → <strong>Google Auth Platform → Branding</strong> मा गई App Name <code>Eyemaze Graphics</code> र Logo राख्नुहोस्, र Audience लाई <strong>In production</strong> (External) बनाउनुहोस्।
+                </p>
+              </div>
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-amber-200/70 dark:border-slate-700 space-y-1">
+                <p className="font-bold text-slate-900 dark:text-white">२. Custom Auth Domain (auth.eyemaze.com.np)</p>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                  Firebase Hosting मा <code>auth.eyemaze.com.np</code> जोडी OAuth Redirect URI मा <code>https://auth.eyemaze.com.np/__/auth/handler</code> थप्नुहोस् र env मा <code>VITE_FIREBASE_AUTH_DOMAIN=auth.eyemaze.com.np</code> सेट गर्नुहोस्।
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
