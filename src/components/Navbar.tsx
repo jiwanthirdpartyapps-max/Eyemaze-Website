@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { Menu, X, Sun, Moon, ShieldCheck, ChevronDown } from 'lucide-react';
+import { Menu, X, Sun, Moon, ShieldCheck, ChevronDown, User, LayoutDashboard } from 'lucide-react';
+import type { UserProfile } from '../utils/dashboardLogic';
 
 interface NavbarProps {
   onOpenOrderPortal: () => void;
+  onOpenLogin: () => void;
+  isLoggedIn: boolean;
+  user?: UserProfile;
+  onGoToDashboard: () => void;
   isDark: boolean;
   onToggleTheme: () => void;
   onOpenSecurity: () => void;
@@ -11,6 +16,10 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenOrderPortal,
+  onOpenLogin,
+  isLoggedIn,
+  user,
+  onGoToDashboard,
   isDark,
   onToggleTheme,
   onOpenSecurity,
@@ -150,15 +159,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             Contact
           </a>
 
-          <a
-            href="#portal"
-            className="text-sm font-semibold text-rose-400 hover:text-rose-300 transition-colors"
+          <button
+            type="button"
+            onClick={isLoggedIn ? onGoToDashboard : onOpenLogin}
+            className="text-sm font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
           >
-            Portal
-          </a>
+            {isLoggedIn ? 'Dashboard' : 'Portal'}
+          </button>
         </nav>
 
-        {/* Zone 3: Security, Theme, Dual Pill Buttons (Magenta Log In + Orange Order Print) */}
+        {/* Zone 3: Security, Theme, Dual Pill Buttons */}
         <div className="flex items-center gap-3 shrink-0">
           {/* Security Shield Modal Trigger */}
           <button
@@ -181,14 +191,27 @@ export const Navbar: React.FC<NavbarProps> = ({
             {isDark ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-slate-200" />}
           </button>
 
-          {/* Payowire Magenta 'Log in' Pill */}
-          <button
-            type="button"
-            onClick={onOpenOrderPortal}
-            className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-[#E83E8C] hover:bg-[#d42d7a] transition-colors shadow-md shadow-pink-600/20 cursor-pointer"
-          >
-            Log in
-          </button>
+          {/* If Logged in, show Dashboard shortcut pill, otherwise show Log in */}
+          {isLoggedIn ? (
+            <button
+              type="button"
+              onClick={onGoToDashboard}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-slate-800 hover:bg-slate-750 border border-slate-700 transition-colors shadow-md cursor-pointer"
+            >
+              <div className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center text-[10px] font-bold">
+                JM
+              </div>
+              <span className="hidden sm:inline">Dashboard</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onOpenLogin}
+              className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-[#E83E8C] hover:bg-[#d42d7a] transition-colors shadow-md shadow-pink-600/20 cursor-pointer"
+            >
+              Log in
+            </button>
+          )}
 
           {/* Payowire Orange 'Register' / 'Order Print' Pill */}
           <button
@@ -262,11 +285,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               type="button"
               onClick={() => {
                 setMobileOpen(false);
-                onOpenOrderPortal();
+                if (isLoggedIn) onGoToDashboard();
+                else onOpenLogin();
               }}
               className="w-full py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-[#E83E8C]"
             >
-              Log in
+              {isLoggedIn ? 'Dashboard' : 'Log in'}
             </button>
             <button
               type="button"

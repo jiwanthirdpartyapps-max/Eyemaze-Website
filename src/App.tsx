@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Mail, MapPin, Phone, Send } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
@@ -18,17 +18,32 @@ import { PayowireFooter } from './components/PayowireFooter';
 import { VideoModal } from './components/VideoModal';
 import { AiPrintAdvisorModal } from './components/AiPrintAdvisorModal';
 import { SecurityShieldModal } from './components/SecurityShieldModal';
+import { LoginModal } from './components/LoginModal';
+import { UserDashboard } from './components/UserDashboard';
 import { INITIAL_PRINT_ORDERS } from './data/eyemazeData';
+import { INITIAL_USER_PROFILE, type UserProfile } from './utils/dashboardLogic';
 import type { PrintCategory, PrintFinish, PrintOrder } from './utils/printPricing';
 
 export default function App() {
   const [orders, setOrders] = useState<PrintOrder[]>(INITIAL_PRINT_ORDERS);
   const [selectedCategory, setSelectedCategory] = useState<PrintCategory>('visiting-cards');
   const [selectedFinish, setSelectedFinish] = useState<PrintFinish>('gold-foil');
+  const [user, setUser] = useState<UserProfile>(INITIAL_USER_PROFILE);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Modals
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [securityModalOpen, setSecurityModalOpen] = useState(false);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+
+  // Auto-route to dashboard if URL hash is #dashboard
+  useEffect(() => {
+    if (window.location.hash === '#dashboard') {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const handleToggleTheme = () => {
     setIsDark((prev) => {
@@ -65,6 +80,11 @@ export default function App() {
     handleJumpToPortal();
   };
 
+  const handleLoginSuccess = (loggedUser: UserProfile) => {
+    setUser(loggedUser);
+    setIsLoggedIn(true);
+  };
+
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactName.trim() || !contactEmail.trim() || !contactMessage.trim()) return;
@@ -74,11 +94,40 @@ export default function App() {
     setContactMessage('');
   };
 
+  // IF LOGGED IN: Render the Exact Payowire User Dashboard (Matching image_1f64d8e5.png)
+  if (isLoggedIn) {
+    return (
+      <div className={`min-h-screen transition-colors duration-200 ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#f4f7fc] text-slate-900'}`}>
+        <UserDashboard
+          user={user}
+          onUpdateUser={setUser}
+          onExitToWebsite={() => {
+            setIsLoggedIn(false);
+            window.location.hash = '';
+          }}
+          onOpenSecurity={() => setSecurityModalOpen(true)}
+          isDark={isDark}
+          onToggleTheme={handleToggleTheme}
+        />
+
+        <SecurityShieldModal
+          isOpen={securityModalOpen}
+          onClose={() => setSecurityModalOpen(false)}
+        />
+      </div>
+    );
+  }
+
+  // PUBLIC MARKETING SITE: 1000% Exact Payowire Visual Clone
   return (
     <div className={`min-h-screen transition-colors duration-200 ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
       {/* 1. Payowire-Style Header / Navbar */}
       <Navbar
         onOpenOrderPortal={handleJumpToPortal}
+        onOpenLogin={() => setLoginModalOpen(true)}
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onGoToDashboard={() => setIsLoggedIn(true)}
         isDark={isDark}
         onToggleTheme={handleToggleTheme}
         onOpenSecurity={() => setSecurityModalOpen(true)}
@@ -208,7 +257,7 @@ export default function App() {
                         required
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
-                        placeholder="Aarav Shrestha"
+                        placeholder="Jiwan Kumar Majhi"
                         className="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-rose-500"
                       />
                     </div>
@@ -222,7 +271,7 @@ export default function App() {
                         required
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
-                        placeholder="aarav@company.com.np"
+                        placeholder="4jsm.life@gmail.com"
                         className="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-rose-500"
                       />
                     </div>
@@ -277,7 +326,13 @@ export default function App() {
       {/* 16. Payowire-Style 4-Column Footer with Trustpilot Rating */}
       <PayowireFooter onOpenSecurity={() => setSecurityModalOpen(true)} />
 
-      {/* 17. Interactive Modals */}
+      {/* 17. Modals */}
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
       <VideoModal
         isOpen={videoModalOpen}
         onClose={() => setVideoModalOpen(false)}

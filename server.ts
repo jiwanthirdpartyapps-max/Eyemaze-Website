@@ -58,6 +58,49 @@ async function startServer() {
     }
   });
 
+  // API endpoint for Authentication (used by both Web and Android App)
+  app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+    const cleanEmail = (email || '').trim().toLowerCase();
+
+    // Support Jiwan Kumar Majhi or standard demo
+    const user = {
+      id: 'usr_85050801',
+      name: 'Jiwan Kumar Majhi',
+      email: cleanEmail || '4jsm.life@gmail.com',
+      accountId: '85050801',
+      balanceNpr: 124555,
+      balanceUsd: 0.0,
+      isVerified: false,
+      totalCards: 0,
+      bankAccounts: 0,
+      token: 'jwt_eyemaze_' + Buffer.from(cleanEmail || '4jsm.life').toString('base64'),
+    };
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      user,
+      token: user.token,
+    });
+  });
+
+  // API endpoint for Android App Integration Guide and Config
+  app.get('/api/android/config', (req, res) => {
+    res.json({
+      appName: 'Payowire / Eyemaze Android App',
+      packageName: 'np.com.eyemaze.app',
+      apiVersion: 'v1.0.0',
+      authEndpoint: '/api/auth/login',
+      dashboardUrl: 'https://ais-dev-kb5whbwhogqfr4ny7zic7a-474499258610.us-east1.run.app/#dashboard',
+      supportedModes: ['TWA (Trusted Web Activity)', 'WebView Hybrid', 'Native REST API (Retrofit)'],
+      quickCredentials: {
+        email: '4jsm.life@gmail.com',
+        accountId: '85050801',
+      }
+    });
+  });
+
   // Vite development middleware
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
