@@ -10,9 +10,13 @@ import {
 } from 'firebase/auth';
 import {
   getFirestore,
+  collection,
   doc,
   getDoc,
+  getDocs,
   getDocFromServer,
+  query,
+  where,
   setDoc,
   updateDoc,
   serverTimestamp,
@@ -23,6 +27,7 @@ import {
   deriveAccountIdFromUid,
   type UserProfile,
 } from './utils/dashboardLogic';
+import type { VirtualCardTokenized } from './utils/virtualCardLogic';
 
 export enum OperationType {
   CREATE = 'create',
@@ -290,5 +295,59 @@ export async function testFirestoreConnection(): Promise<boolean> {
       return false;
     }
     return true;
+  }
+}
+
+export async function listUserVirtualCards(uid: string): Promise<VirtualCardTokenized[]> {
+  if (!auth.currentUser || auth.currentUser.uid !== uid) return [];
+  const cardsPath = `users/${uid}/cards`;
+  try {
+    const q = query(collection(db, 'users', uid, 'cards'), where('userId', '==', uid));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => d.data() as VirtualCardTokenized);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, cardsPath);
+  }
+}
+
+export async function saveUserVirtualCard(card: VirtualCardTokenized): Promise<void> {
+  const cardPath = `users/${card.userId}/cards/${card.id}`;
+  try {
+    await setDoc(doc(db, 'users', card.userId, 'cards', card.id), {
+      id: card.id,
+      userId: card.userId,
+      network: card.network,
+      cardholderName: card.cardholderName,
+      maskedPan: card.maskedPan,
+      last4: card.last4,
+      expiryMonth: card.expiryMonth,
+      expiryYear: card.expiryYear,
+      cardToken: card.cardToken,
+      panFingerprint: card.panFingerprint,
+      status: card.status,
+      isLinkedVerified: card.isLinkedVerified,
+      threeDsEnrolled: card.threeDsEnrolled,
+      spendingLimitUsd: card.spendingLimitUsd,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, cardPath);
+  }
+}
+
+export async function updateUserVirtualCard(
+  uid: string,
+  cardId: string,
+  patch: Partial<Pick<VirtualCardTokenized, 'status' | 'isLinkedVerified' | 'spendingLimitUsd'>>
+): Promise<void> {
+  const cardPath = `users/${uid}/cards/${cardId}`;
+  try {
+    await updateDoc(doc(db, 'users', uid, 'cards', cardId), {
+      ...patch,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, cardPath);
   }
 }

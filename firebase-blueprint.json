@@ -104,6 +104,30 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "title", "category", "amountNpr"]
+    },
+    "VirtualCard": {
+      "title": "Tokenized Virtual Card",
+      "description": "PCI-DSS tokenized virtual Visa/Mastercard metadata (never stores plaintext PAN or CVV).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Card document ID", "maxLength": 64 },
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID", "maxLength": 128 },
+        "network": { "type": "string", "enum": ["VISA", "MASTERCARD"] },
+        "cardholderName": { "type": "string", "maxLength": 100 },
+        "maskedPan": { "type": "string", "maxLength": 32 },
+        "last4": { "type": "string", "maxLength": 4 },
+        "expiryMonth": { "type": "string", "maxLength": 2 },
+        "expiryYear": { "type": "string", "maxLength": 2 },
+        "cardToken": { "type": "string", "maxLength": 64 },
+        "panFingerprint": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["active", "frozen"] },
+        "isLinkedVerified": { "type": "boolean" },
+        "threeDsEnrolled": { "type": "boolean" },
+        "spendingLimitUsd": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "network", "cardholderName", "maskedPan", "last4", "expiryMonth", "expiryYear", "cardToken", "status", "isLinkedVerified", "threeDsEnrolled", "spendingLimitUsd"]
     }
   },
   "firestore": {
@@ -130,6 +154,10 @@
     "/expenses/{expenseId}": {
       "schema": { "$ref": "#/entities/Expense" },
       "description": "Press operating expenditures."
+    },
+    "/users/{userId}/cards/{cardId}": {
+      "schema": { "$ref": "#/entities/VirtualCard" },
+      "description": "User-scoped tokenized virtual Visa/Mastercard records with 3DS enrollment."
     }
   }
 }

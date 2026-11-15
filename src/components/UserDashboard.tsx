@@ -28,6 +28,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { FirebaseIntegrationHub } from './FirebaseIntegrationHub';
+import { VirtualCardsStudio } from './VirtualCardsStudio';
 import type { UserProfile, WalletTransaction } from '../utils/dashboardLogic';
 import {
   getUserInitials,
@@ -75,7 +76,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
   const [transactions, setTransactions] = useState<WalletTransaction[]>(INITIAL_TRANSACTIONS);
   const [showInstallBanner, setShowInstallBanner] = useState(true);
   const [showAddFundModal, setShowAddFundModal] = useState(false);
-  const [showCreateCardModal, setShowCreateCardModal] = useState(false);
+  const [openCreateCardInStudio, setOpenCreateCardInStudio] = useState(false);
   const [fundAmountInput, setFundAmountInput] = useState('5000');
   const [fundPaymentMethod, setFundPaymentMethod] = useState('eSewa');
   const [copiedCode, setCopiedCode] = useState(false);
@@ -85,7 +86,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     if (tab === 'add-fund') {
       setShowAddFundModal(true);
     } else if (tab === 'create-card') {
-      setShowCreateCardModal(true);
+      setOpenCreateCardInStudio(true);
+      setActiveTab('card-list');
     } else {
       setActiveTab(tab);
     }
@@ -116,15 +118,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     };
     setTransactions((prev) => [newTx, ...prev]);
     setShowAddFundModal(false);
-  };
-
-  const handleCreateVirtualCard = () => {
-    const updated = {
-      ...user,
-      totalCards: user.totalCards + 1,
-    };
-    onUpdateUser(updated);
-    setShowCreateCardModal(false);
   };
 
 const ANDROID_KOTLIN_SNIPPET = `// In your Android Studio project: MainActivity.kt
@@ -309,8 +302,10 @@ class MainActivity : AppCompatActivity() {
                 type="button"
                 onClick={() => {
                   if (item.id === 'add-fund') setShowAddFundModal(true);
-                  else if (item.id === 'create-card') setShowCreateCardModal(true);
-                  else setActiveTab(item.id);
+                  else if (item.id === 'create-card') {
+                    setOpenCreateCardInStudio(true);
+                    setActiveTab('card-list');
+                  } else setActiveTab(item.id);
                 }}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl transition-all cursor-pointer ${
                   activeTab === item.id
@@ -446,6 +441,7 @@ class MainActivity : AppCompatActivity() {
         <nav aria-label="Mobile Dashboard Navigation" className="flex md:hidden items-center gap-1.5 overflow-x-auto pb-1">
           {[
             { id: 'dashboard' as DashboardTab, label: 'Dashboard' },
+            { id: 'card-list' as DashboardTab, label: 'Virtual Cards' },
             { id: 'firebase-hub' as DashboardTab, label: 'System Audit & DB' },
             { id: 'android-bridge' as DashboardTab, label: 'Android Bridge' },
             { id: 'bank-account' as DashboardTab, label: 'Banks' },
@@ -586,7 +582,7 @@ class MainActivity : AppCompatActivity() {
               <button
                 type="button"
                 aria-label="My Cards"
-                onClick={() => setShowCreateCardModal(true)}
+                onClick={() => setActiveTab('card-list')}
                 className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 cursor-pointer hover:border-blue-300 transition-colors text-left"
               >
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center shrink-0">
@@ -889,44 +885,17 @@ class MainActivity : AppCompatActivity() {
         )}
 
         {activeTab === 'card-list' && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-              <div>
-                <h2 className="font-display font-extrabold text-xl text-slate-900 dark:text-white">
-                  My Cards
-                </h2>
-                <p className="text-xs text-slate-500">Virtual & Physical Payowire Cards</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCreateCardModal(true)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#FF5B14] hover:bg-[#e04b08] cursor-pointer"
-              >
-                + Create Card
-              </button>
-            </div>
-
-            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/40 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-orange-100 text-[#FF5B14] flex items-center justify-center mx-auto">
-                <CreditCard className="w-8 h-8" />
-              </div>
-              <div className="max-w-sm mx-auto space-y-1">
-                <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
-                  No Active Virtual Cards Yet
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Issue an instant virtual Visa or Mastercard for safe online print orders and international purchases.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCreateCardModal(true)}
-                className="px-6 py-2.5 rounded-full text-xs font-bold text-white bg-[#FF5B14] hover:bg-[#e04b08] cursor-pointer"
-              >
-                Issue My First Card
-              </button>
-            </div>
-          </div>
+          <VirtualCardsStudio
+            user={user}
+            onCardCountChange={(count) => {
+              if (user.totalCards !== count) {
+                onUpdateUser({ ...user, totalCards: count });
+              }
+            }}
+            onRecordTransaction={(tx) => setTransactions((prev) => [tx, ...prev])}
+            openCreateDirectly={openCreateCardInStudio}
+            onHandledOpenCreate={() => setOpenCreateCardInStudio(false)}
+          />
         )}
 
         {activeTab === 'bank-account' && (
@@ -1300,56 +1269,6 @@ class MainActivity : AppCompatActivity() {
                 Confirm Deposit
               </button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* 7. CREATE CARD MODAL */}
-      {showCreateCardModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="create-card-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85"
-        >
-          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-              <h3 id="create-card-title" className="font-display font-bold text-lg text-slate-900 dark:text-white">
-                Issue Virtual Payowire Card
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowCreateCardModal(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Preview Card */}
-            <div className="h-44 rounded-2xl brand-gradient p-5 text-white shadow-xl flex flex-col justify-between">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-bold tracking-widest">PAYOWIRE / EYEMAZE</span>
-                <span className="font-bold italic">VISA</span>
-              </div>
-              <div className="space-y-1">
-                <p className="font-mono text-base tracking-widest font-bold">
-                  4821 9081 3340 7712
-                </p>
-                <div className="flex justify-between items-center text-[10px] font-mono opacity-85">
-                  <span>{user.name.toUpperCase()}</span>
-                  <span>12/29</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleCreateVirtualCard}
-              className="w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-[#FF5B14] hover:bg-[#e04b08] transition-colors cursor-pointer"
-            >
-              Issue Virtual Card Now
-            </button>
           </div>
         </div>
       )}
