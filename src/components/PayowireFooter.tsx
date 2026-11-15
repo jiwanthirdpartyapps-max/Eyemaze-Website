@@ -55,7 +55,7 @@ export const PayowireFooter: React.FC<PayowireFooterProps> = ({ onOpenSecurity }
             <p className="leading-relaxed text-slate-400">
               Eyemaze Graphics Enterprises (eyemaze.com.np) — मरिण–६, छाप, सिन्धुली (Marin-6, Chhap, Sindhuli) मा आधारित कमर्सियल प्रिन्टिङ, ग्राफिक डिजाइन, प्याकेजिङ तथा स्टेसनरी व्यवसाय।
             </p>
-            <div className="text-[11px] text-slate-500 font-mono">
+            <div className="text-[11px] text-slate-400 font-mono">
               eyemaze.com.np · {EYEMAZE_LOCATION.addressNepali} ({EYEMAZE_LOCATION.plusCode})
             </div>
           </div>
@@ -180,7 +180,7 @@ export const PayowireFooter: React.FC<PayowireFooterProps> = ({ onOpenSecurity }
         </div>
 
         {/* Bottom Legal & Attribution */}
-        <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>© {new Date().getFullYear()} Eyemaze Graphics Enterprises. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <a href="#contact" className="hover:text-slate-300 transition-colors">Privacy Policy</a>

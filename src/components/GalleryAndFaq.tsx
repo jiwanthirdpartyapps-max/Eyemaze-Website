@@ -30,14 +30,14 @@ export const GalleryAndFaq: React.FC<GalleryAndFaqProps> = ({ onSelectSpecForQuo
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="space-y-1.5">
-              <p className="text-sm font-semibold text-rose-600 dark:text-rose-400">
+              <p className="text-sm font-semibold text-rose-700 dark:text-rose-400">
                 Stock & Finish Directory
               </p>
               <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
                 Click any specification to load it in the Estimator
               </h2>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-600 dark:text-slate-400">
               12 standard production specs ready for rapid quoting
             </p>
           </div>
@@ -51,12 +51,12 @@ export const GalleryAndFaq: React.FC<GalleryAndFaqProps> = ({ onSelectSpecForQuo
                 className="bg-white dark:bg-slate-950 rounded-2xl px-4 py-3.5 border border-slate-200/80 dark:border-slate-800 payo-card-shadow hover:border-rose-400 dark:hover:border-rose-500 hover:-translate-y-0.5 transition-all text-left flex items-center justify-between gap-3 cursor-pointer group"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-rose-700 dark:group-hover:text-rose-400 transition-colors">
                     {spec.label}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{spec.detail}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 truncate">{spec.detail}</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-rose-600 dark:group-hover:text-rose-400 shrink-0 transition-colors" />
+                <ArrowRight className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-rose-700 dark:group-hover:text-rose-400 shrink-0 transition-colors" />
               </button>
             ))}
           </div>
@@ -68,7 +68,7 @@ export const GalleryAndFaq: React.FC<GalleryAndFaqProps> = ({ onSelectSpecForQuo
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2 max-w-xl">
-              <p className="text-xs font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400">
+              <p className="text-xs font-bold uppercase tracking-widest text-rose-700 dark:text-rose-400">
                 Selected Press & Studio Work
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -112,12 +112,16 @@ export const GalleryAndFaq: React.FC<GalleryAndFaqProps> = ({ onSelectSpecForQuo
                     <img
                       src={item.image}
                       alt={item.title}
+                      width={960}
+                      height={717}
+                      loading="lazy"
+                      decoding="async"
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                   <div className="p-6 space-y-2.5">
-                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
                       <span>{item.categoryLabel}</span>
                       <span aria-hidden="true">·</span>
                       <span>{item.client}</span>
@@ -125,7 +129,7 @@ export const GalleryAndFaq: React.FC<GalleryAndFaqProps> = ({ onSelectSpecForQuo
                     <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white leading-snug">
                       {item.title}
                     </h3>
-                    <p className="text-xs font-mono text-slate-500 dark:text-slate-400">{item.specLine}</p>
+                    <p className="text-xs font-mono text-slate-600 dark:text-slate-400">{item.specLine}</p>
                     <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
                       {item.description}
                     </p>
@@ -135,7 +139,7 @@ export const GalleryAndFaq: React.FC<GalleryAndFaqProps> = ({ onSelectSpecForQuo
                   <button
                     type="button"
                     onClick={() => setSelectedItem(item)}
-                    className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-orange-600 dark:hover:text-orange-400 inline-flex items-center gap-1.5 cursor-pointer"
+                    className="text-xs font-bold text-rose-700 dark:text-rose-400 hover:text-orange-700 dark:hover:text-orange-400 inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     Inspect deliverables
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -151,7 +155,7 @@ export const GalleryAndFaq: React.FC<GalleryAndFaqProps> = ({ onSelectSpecForQuo
       <section className="py-20 px-6 bg-slate-50 dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 transition-colors">
         <div className="max-w-4xl mx-auto space-y-10">
           <div className="text-center space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-rose-700 dark:text-rose-400">
               Pre-Press Questions
             </p>
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">

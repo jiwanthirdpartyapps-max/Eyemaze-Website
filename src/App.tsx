@@ -1,32 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState, useEffect, useCallback } from 'react';
 import { CheckCircle2, Mail, MapPin, Phone, Send } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { FeaturedStrip } from './components/FeaturedStrip';
-import { BrandStripAndTags } from './components/BrandStripAndTags';
-import { HowItWorksSection } from './components/HowItWorksSection';
-import { PowerFlexSection } from './components/PowerFlexSection';
-import { EverythingInOneSection } from './components/EverythingInOneSection';
-import { WhyChooseSection } from './components/WhyChooseSection';
-import { NetworkTransferSection } from './components/NetworkTransferSection';
-import { SecurityVerifySection } from './components/SecurityVerifySection';
-import { DownloadAppSection } from './components/DownloadAppSection';
-import { InteractiveProofStudio } from './components/InteractiveProofStudio';
-import { PrintPortalDashboard } from './components/PrintPortalDashboard';
-import { GalleryAndFaq } from './components/GalleryAndFaq';
-import { PayowireFooter } from './components/PayowireFooter';
-import { VideoModal } from './components/VideoModal';
-import { AiPrintAdvisorModal } from './components/AiPrintAdvisorModal';
-import { SecurityShieldModal } from './components/SecurityShieldModal';
-import { LoginModal } from './components/LoginModal';
-import { UserDashboard } from './components/UserDashboard';
-import { FirebaseIntegrationHub } from './components/FirebaseIntegrationHub';
-import { EyemazeLocationMap } from './components/EyemazeLocationMap';
 import { INITIAL_PRINT_ORDERS } from './data/eyemazeData';
 import { EYEMAZE_LOCATION } from './data/eyemazeLocation';
 import { type UserProfile } from './utils/dashboardLogic';
-import { subscribeToAuthChanges, signOutFirebase } from './firebase';
 import type { PrintCategory, PrintFinish, PrintOrder } from './utils/printPricing';
+
+const BrandStripAndTags = lazy(() =>
+  import('./components/BrandStripAndTags').then((m) => ({ default: m.BrandStripAndTags }))
+);
+const HowItWorksSection = lazy(() =>
+  import('./components/HowItWorksSection').then((m) => ({ default: m.HowItWorksSection }))
+);
+const PowerFlexSection = lazy(() =>
+  import('./components/PowerFlexSection').then((m) => ({ default: m.PowerFlexSection }))
+);
+const EverythingInOneSection = lazy(() =>
+  import('./components/EverythingInOneSection').then((m) => ({ default: m.EverythingInOneSection }))
+);
+const WhyChooseSection = lazy(() =>
+  import('./components/WhyChooseSection').then((m) => ({ default: m.WhyChooseSection }))
+);
+const NetworkTransferSection = lazy(() =>
+  import('./components/NetworkTransferSection').then((m) => ({ default: m.NetworkTransferSection }))
+);
+const SecurityVerifySection = lazy(() =>
+  import('./components/SecurityVerifySection').then((m) => ({ default: m.SecurityVerifySection }))
+);
+const DownloadAppSection = lazy(() =>
+  import('./components/DownloadAppSection').then((m) => ({ default: m.DownloadAppSection }))
+);
+const InteractiveProofStudio = lazy(() =>
+  import('./components/InteractiveProofStudio').then((m) => ({ default: m.InteractiveProofStudio }))
+);
+const PrintPortalDashboard = lazy(() =>
+  import('./components/PrintPortalDashboard').then((m) => ({ default: m.PrintPortalDashboard }))
+);
+const GalleryAndFaq = lazy(() =>
+  import('./components/GalleryAndFaq').then((m) => ({ default: m.GalleryAndFaq }))
+);
+const PayowireFooter = lazy(() =>
+  import('./components/PayowireFooter').then((m) => ({ default: m.PayowireFooter }))
+);
+const EyemazeLocationMap = lazy(() =>
+  import('./components/EyemazeLocationMap').then((m) => ({ default: m.EyemazeLocationMap }))
+);
+const VideoModal = lazy(() =>
+  import('./components/VideoModal').then((m) => ({ default: m.VideoModal }))
+);
+const AiPrintAdvisorModal = lazy(() =>
+  import('./components/AiPrintAdvisorModal').then((m) => ({ default: m.AiPrintAdvisorModal }))
+);
+const SecurityShieldModal = lazy(() =>
+  import('./components/SecurityShieldModal').then((m) => ({ default: m.SecurityShieldModal }))
+);
+const LoginModal = lazy(() =>
+  import('./components/LoginModal').then((m) => ({ default: m.LoginModal }))
+);
+const UserDashboard = lazy(() =>
+  import('./components/UserDashboard').then((m) => ({ default: m.UserDashboard }))
+);
+const FirebaseIntegrationHub = lazy(() =>
+  import('./components/FirebaseIntegrationHub').then((m) => ({ default: m.FirebaseIntegrationHub }))
+);
+
+const AUTH_HINT_KEY = 'eyemaze_auth_active';
 
 export default function App() {
   const [orders, setOrders] = useState<PrintOrder[]>(INITIAL_PRINT_ORDERS);
@@ -34,6 +74,13 @@ export default function App() {
   const [selectedFinish, setSelectedFinish] = useState<PrintFinish>('gold-foil');
   const [user, setUser] = useState<UserProfile | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [authRequested, setAuthRequested] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return (
+      window.location.hash === '#dashboard' ||
+      window.localStorage.getItem(AUTH_HINT_KEY) === '1'
+    );
+  });
   const [wantsDashboard, setWantsDashboard] = useState(
     () => typeof window !== 'undefined' && window.location.hash === '#dashboard'
   );
@@ -47,25 +94,63 @@ export default function App() {
   const [isDark, setIsDark] = useState(false);
   const [mapsQuotaExceeded, setMapsQuotaExceeded] = useState(false);
 
+  const ensureAuthInitialized = useCallback(() => {
+    setAuthRequested(true);
+  }, []);
+
   useEffect(() => {
     const onQuotaExceeded = () => setMapsQuotaExceeded(true);
     window.addEventListener('gmp-quota-exceeded', onQuotaExceeded);
     return () => window.removeEventListener('gmp-quota-exceeded', onQuotaExceeded);
   }, []);
 
-  // Observe real Firebase Auth state so every signed-in Google user gets their own profile
+  // Load Firebase Auth only once auth is requested (#dashboard, prior session hint, or user interaction/login)
   useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges((authProfile) => {
-      setUser(authProfile);
-      setAuthReady(true);
-    });
-    return () => unsubscribe();
-  }, []);
+    if (!authRequested) {
+      const onFirstInteraction = () => setAuthRequested(true);
+      window.addEventListener('pointerdown', onFirstInteraction, { once: true, passive: true });
+      window.addEventListener('keydown', onFirstInteraction, { once: true, passive: true });
+      return () => {
+        window.removeEventListener('pointerdown', onFirstInteraction);
+        window.removeEventListener('keydown', onFirstInteraction);
+      };
+    }
+
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+
+    import('./firebase')
+      .then(({ subscribeToAuthChanges }) => {
+        if (cancelled) return;
+        unsubscribe = subscribeToAuthChanges((authProfile) => {
+          setUser(authProfile);
+          setAuthReady(true);
+          try {
+            if (authProfile) {
+              window.localStorage.setItem(AUTH_HINT_KEY, '1');
+            } else {
+              window.localStorage.removeItem(AUTH_HINT_KEY);
+            }
+          } catch {
+            // Ignore storage access errors
+          }
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setAuthReady(true);
+      });
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, [authRequested]);
 
   // Track #dashboard hash safely without unauthenticated bypass
   useEffect(() => {
     const syncHash = () => {
       if (window.location.hash === '#dashboard') {
+        setAuthRequested(true);
         setWantsDashboard(true);
       } else if (window.location.hash === '' || window.location.hash === '#') {
         setWantsDashboard(false);
@@ -123,17 +208,31 @@ export default function App() {
   const handleLoginSuccess = (loggedUser: UserProfile) => {
     setUser(loggedUser);
     setWantsDashboard(true);
+    try {
+      window.localStorage.setItem(AUTH_HINT_KEY, '1');
+    } catch {
+      // Ignore storage access errors
+    }
     if (typeof window !== 'undefined') {
       window.location.hash = '#dashboard';
     }
   };
 
   const handleSignOut = async () => {
-    await signOutFirebase();
-    setUser(null);
-    setWantsDashboard(false);
-    if (typeof window !== 'undefined') {
-      window.location.hash = '';
+    try {
+      const { signOutFirebase } = await import('./firebase');
+      await signOutFirebase();
+    } finally {
+      try {
+        window.localStorage.removeItem(AUTH_HINT_KEY);
+      } catch {
+        // Ignore storage access errors
+      }
+      setUser(null);
+      setWantsDashboard(false);
+      if (typeof window !== 'undefined') {
+        window.location.hash = '';
+      }
     }
   };
 
@@ -150,23 +249,29 @@ export default function App() {
   if (user && wantsDashboard) {
     return (
       <div className={`min-h-screen transition-colors duration-200 ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#f4f7fc] text-slate-900'}`}>
-        <UserDashboard
-          user={user}
-          onUpdateUser={(updated) => setUser(updated)}
-          onExitToWebsite={() => {
-            setWantsDashboard(false);
-            window.location.hash = '';
-          }}
-          onSignOut={handleSignOut}
-          onOpenSecurity={() => setSecurityModalOpen(true)}
-          isDark={isDark}
-          onToggleTheme={handleToggleTheme}
-        />
+        <Suspense fallback={<div className="min-h-screen bg-slate-950" aria-hidden="true" />}>
+          <UserDashboard
+            user={user}
+            onUpdateUser={(updated) => setUser(updated)}
+            onExitToWebsite={() => {
+              setWantsDashboard(false);
+              window.location.hash = '';
+            }}
+            onSignOut={handleSignOut}
+            onOpenSecurity={() => setSecurityModalOpen(true)}
+            isDark={isDark}
+            onToggleTheme={handleToggleTheme}
+          />
+        </Suspense>
 
-        <SecurityShieldModal
-          isOpen={securityModalOpen}
-          onClose={() => setSecurityModalOpen(false)}
-        />
+        {securityModalOpen && (
+          <Suspense fallback={null}>
+            <SecurityShieldModal
+              isOpen={securityModalOpen}
+              onClose={() => setSecurityModalOpen(false)}
+            />
+          </Suspense>
+        )}
       </div>
     );
   }
@@ -193,10 +298,14 @@ export default function App() {
       {/* 1. Payowire-Style Header / Navbar */}
       <Navbar
         onOpenOrderPortal={handleJumpToPortal}
-        onOpenLogin={() => setLoginModalOpen(true)}
+        onOpenLogin={() => {
+          ensureAuthInitialized();
+          setLoginModalOpen(true);
+        }}
         isLoggedIn={isLoggedIn}
         user={user}
         onGoToDashboard={() => {
+          ensureAuthInitialized();
           if (user) {
             setWantsDashboard(true);
             window.location.hash = '#dashboard';
@@ -225,47 +334,49 @@ export default function App() {
           <FeaturedStrip onSelectCategory={handleSelectCategory} />
         </div>
 
-        {/* 4. Section 2: Trusted Brand Marquee & Popular Regions Pill Grid */}
-        <BrandStripAndTags />
+        <Suspense fallback={<div className="min-h-[420px]" aria-hidden="true" />}>
+          {/* 4. Section 2: Trusted Brand Marquee & Popular Regions Pill Grid */}
+          <BrandStripAndTags />
 
-        {/* 5. Section 3: 3-Step Process Track ('How Printing Works') */}
-        <HowItWorksSection onOpenPortal={handleJumpToPortal} />
+          {/* 5. Section 3: 3-Step Process Track ('How Printing Works') */}
+          <HowItWorksSection onOpenPortal={handleJumpToPortal} />
 
-        {/* 6. Section 4: 'The power to make things happen' (POS Terminal Mockup + 6 Features) */}
-        <PowerFlexSection onOpenPortal={handleJumpToPortal} />
+          {/* 6. Section 4: 'The power to make things happen' (POS Terminal Mockup + 6 Features) */}
+          <PowerFlexSection onOpenPortal={handleJumpToPortal} />
 
-        {/* 7. Section 5: 'Everything in one print portal' (4 Service Cards with Pastel Icons) */}
-        <EverythingInOneSection onSelectCategory={handleSelectCategory} />
+          {/* 7. Section 5: 'Everything in one print portal' (4 Service Cards with Pastel Icons) */}
+          <EverythingInOneSection onSelectCategory={handleSelectCategory} />
 
-        {/* 8. Section 6: 'Why choose Eyemaze' (Apple Pay Wallet Stack + 4 Benefits) */}
-        <div id="why-choose">
-          <WhyChooseSection />
-        </div>
+          {/* 8. Section 6: 'Why choose Eyemaze' (Apple Pay Wallet Stack + 4 Benefits) */}
+          <div id="why-choose">
+            <WhyChooseSection />
+          </div>
 
-        {/* 9. Section 7: 'Print & packaging logistics for growing brands' (Transit Arc Map + Networks) */}
-        <NetworkTransferSection />
+          {/* 9. Section 7: 'Print & packaging logistics for growing brands' (Transit Arc Map + Networks) */}
+          <NetworkTransferSection />
 
-        {/* 10. Section 8: 'Security you can verify' (4 Cards with Hearts + 4 Security Badges) */}
-        <SecurityVerifySection onOpenSecurityModal={() => setSecurityModalOpen(true)} />
+          {/* 10. Section 8: 'Security you can verify' (4 Cards with Hearts + 4 Security Badges) */}
+          <SecurityVerifySection onOpenSecurityModal={() => setSecurityModalOpen(true)} />
 
-        {/* 11. Section 9: 'Manage Eyemaze from your phone' (Mobile App Promo with QR Code) */}
-        <DownloadAppSection />
+          {/* 11. Section 9: 'Manage Eyemaze from your phone' (Mobile App Promo with QR Code) */}
+          <DownloadAppSection />
 
-        {/* 12. Interactive Live Print Portal & Live Cost Estimator */}
-        <PrintPortalDashboard
-          orders={orders}
-          onAddOrder={handleAddOrder}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          selectedFinish={selectedFinish}
-          onFinishChange={setSelectedFinish}
-        />
+          {/* 12. Interactive Live Print Portal & Live Cost Estimator */}
+          <PrintPortalDashboard
+            orders={orders}
+            onAddOrder={handleAddOrder}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            selectedFinish={selectedFinish}
+            onFinishChange={setSelectedFinish}
+          />
 
-        {/* 13. Interactive 3D Finish Simulator */}
-        <InteractiveProofStudio />
+          {/* 13. Interactive 3D Finish Simulator */}
+          <InteractiveProofStudio />
 
-        {/* 14. Technical Specs Matrix, Portfolio & FAQs */}
-        <GalleryAndFaq onSelectSpecForQuote={handleSelectSpecForQuote} />
+          {/* 14. Technical Specs Matrix, Portfolio & FAQs */}
+          <GalleryAndFaq onSelectSpecForQuote={handleSelectSpecForQuote} />
+        </Suspense>
 
         {/* 15. Contact & Press Studio Section */}
         <section id="contact" className="py-20 px-6 bg-slate-950 text-white">
@@ -418,36 +529,56 @@ export default function App() {
           </div>
 
           <div id="location-map" className="max-w-7xl mx-auto mt-12 scroll-mt-24">
-            <EyemazeLocationMap />
+            <Suspense fallback={<div className="h-[480px] rounded-3xl bg-slate-900 border border-white/10" aria-hidden="true" />}>
+              <EyemazeLocationMap />
+            </Suspense>
           </div>
         </section>
       </main>
 
       {/* 16. Payowire-Style 4-Column Footer with Trustpilot Rating */}
-      <PayowireFooter onOpenSecurity={() => setSecurityModalOpen(true)} />
+      <Suspense fallback={null}>
+        <PayowireFooter onOpenSecurity={() => setSecurityModalOpen(true)} />
+      </Suspense>
 
       {/* 17. Modals */}
-      <LoginModal
-        isOpen={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      {loginModalOpen && (
+        <Suspense fallback={null}>
+          <LoginModal
+            isOpen={loginModalOpen}
+            onClose={() => setLoginModalOpen(false)}
+            onLoginSuccess={handleLoginSuccess}
+          />
+        </Suspense>
+      )}
 
-      <VideoModal
-        isOpen={videoModalOpen}
-        onClose={() => setVideoModalOpen(false)}
-      />
+      {videoModalOpen && (
+        <Suspense fallback={null}>
+          <VideoModal
+            isOpen={videoModalOpen}
+            onClose={() => setVideoModalOpen(false)}
+          />
+        </Suspense>
+      )}
 
-      <AiPrintAdvisorModal
-        isOpen={aiModalOpen}
-        onClose={() => setAiModalOpen(false)}
-        defaultCategory={selectedCategory}
-      />
+      {aiModalOpen && (
+        <Suspense fallback={null}>
+          <AiPrintAdvisorModal
+            isOpen={aiModalOpen}
+            onClose={() => setAiModalOpen(false)}
+            defaultCategory={selectedCategory}
+          />
+        </Suspense>
+      )}
 
-      <SecurityShieldModal
-        isOpen={securityModalOpen}
-        onClose={() => setSecurityModalOpen(false)}
-      />
+      {securityModalOpen && (
+        <Suspense fallback={null}>
+          <SecurityShieldModal
+            isOpen={securityModalOpen}
+            onClose={() => setSecurityModalOpen(false)}
+          />
+        </Suspense>
+      )}
 
       {firebaseHubModalOpen && (
         <div
@@ -457,7 +588,9 @@ export default function App() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 overflow-y-auto"
         >
           <div className="relative w-full max-w-5xl my-8">
-            <FirebaseIntegrationHub onClose={() => setFirebaseHubModalOpen(false)} />
+            <Suspense fallback={null}>
+              <FirebaseIntegrationHub onClose={() => setFirebaseHubModalOpen(false)} />
+            </Suspense>
           </div>
         </div>
       )}

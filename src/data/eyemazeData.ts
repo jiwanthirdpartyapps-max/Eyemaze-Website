@@ -1,4 +1,10 @@
 import type { PrintCategory, PrintFinish, PrintOrder } from '../utils/printPricing';
+import visitingCardsImg from '../assets/images/print_visiting_cards_1794657251418.jpg';
+import packagingBoxImg from '../assets/images/print_packaging_box_1794657536632.jpg';
+import flexBannerImg from '../assets/images/print_flex_banner_1794657251987.jpg';
+import photographyShootImg from '../assets/images/photography_studio_shoot_1794657533895.jpg';
+import merchandiseImg from '../assets/images/print_merchandise_1794657251898.jpg';
+import pressHeroImg from '../assets/images/printing_press_hero_1794657251905.jpg';
 
 export interface ServicePillar {
   id: string;
@@ -139,7 +145,7 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     categoryLabel: 'Stationery Services',
     client: 'Aeterna & Co.',
     specLine: '350 GSM Velvet Matte · Hot Gold Foil · Embossed Seal',
-    image: '/src/assets/images/print_visiting_cards_1794657251418.jpg',
+    image: visitingCardsImg,
     description: 'Bespoke corporate stationery set engineered with 350 GSM dark navy cotton board, crisp metallic gold foil stamping, matching watermarked letterheads, and custom envelopes.',
     deliverables: ['1,000 Foil Visiting Cards', '500 Bond Letterheads', '500 Custom Envelopes'],
   },
@@ -150,7 +156,7 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     categoryLabel: 'Specialty Items',
     client: 'Aurelia & Luna',
     specLine: '1200 GSM Rigid Box · Laser Die-Cut · Ribbon Closure',
-    image: '/src/assets/images/print_packaging_box_1794657536632.jpg',
+    image: packagingBoxImg,
     description: 'Custom structural packaging dielines and luxury retail carry bags featuring coral and charcoal board finishes with precision blind debossing.',
     deliverables: ['Custom Structural Dieline', 'Rigid Magnetic Boxes', 'Foil-Stamped Retail Bags'],
   },
@@ -161,7 +167,7 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     categoryLabel: 'Print Services',
     client: 'Adventure Tours Nepal',
     specLine: '440 GSM Star Flex · Weatherproof Eco-Solvent Ink',
-    image: '/src/assets/images/print_flex_banner_1794657251987.jpg',
+    image: flexBannerImg,
     description: 'High-impact large format hoarding banners and exhibition backdrops printed on weather-resistant star flex with vivid outdoor color calibration.',
     deliverables: ['20x10 ft Hoarding Flex', 'Roll-Up Standees', 'Vinyl Counter Branding'],
   },
@@ -172,7 +178,7 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     categoryLabel: 'Photography Services',
     client: 'Serenity Naturals',
     specLine: 'Multi-Strobe Studio Lighting · 50MP Color-Matched RAW',
-    image: '/src/assets/images/photography_studio_shoot_1794657533895.jpg',
+    image: photographyShootImg,
     description: 'Commercial product photography and print-ready color grading tailored specifically for CMYK packaging catalogs and billboard campaigns.',
     deliverables: ['30 Studio Packshots', 'Print-Ready CMYK Retouch', 'Catalog Spread Layouts'],
   },
@@ -183,7 +189,7 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     categoryLabel: 'Personalized Sets',
     client: 'Elevate Adventures',
     specLine: 'Full-Color Sublimation · Combed Cotton Apparel',
-    image: '/src/assets/images/print_merchandise_1794657251898.jpg',
+    image: merchandiseImg,
     description: 'Complete corporate gift packs featuring custom printed apparel, ceramic mugs, stainless tumblers, and canvas tote bags with vibrant fade-proof transfer.',
     deliverables: ['250 Printed T-Shirts', '250 Ceramic Mugs', '250 Canvas Tote Bags'],
   },
@@ -194,7 +200,7 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     categoryLabel: 'Print Services',
     client: 'Himalayan Publications',
     specLine: 'Heidelberg Speedmaster · Pantone Spot Calibration',
-    image: '/src/assets/images/printing_press_hero_1794657251905.jpg',
+    image: pressHeroImg,
     description: 'High-volume magazine, book, and commercial catalog printing run on industrial multi-color offset presses with strict density verification.',
     deliverables: ['10,000 Offset Catalogs', 'Pantone Ink Matching', 'Automated Saddle Stitching'],
   },

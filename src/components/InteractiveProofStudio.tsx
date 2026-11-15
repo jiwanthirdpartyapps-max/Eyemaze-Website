@@ -79,7 +79,7 @@ export const InteractiveProofStudio: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* 3-Step Print Workflow Strip (Payowire How It Works Pattern) */}
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <p className="text-xs font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-rose-700 dark:text-rose-400">
             How Printing Works
           </p>
           <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -96,19 +96,19 @@ export const InteractiveProofStudio: React.FC = () => {
               step: '01',
               title: 'Select stock & submit brief',
               desc: 'Pick your paper GSM, dimensions, and finish in our live calculator or upload your PDF/CDR artwork.',
-              tint: 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400',
+              tint: 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300',
             },
             {
               step: '02',
               title: 'Approve digital CMYK proof',
               desc: 'Review bleed lines, foil placement, and color separation directly inside the Eyemaze Print Portal.',
-              tint: 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400',
+              tint: 'bg-orange-50 dark:bg-orange-950/50 text-orange-800 dark:text-orange-300',
             },
             {
               step: '03',
               title: 'Press run & doorstep delivery',
               desc: 'Your order enters our Heidelberg offset or large-format queue and ships with live status updates.',
-              tint: 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400',
+              tint: 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300',
             },
           ].map((item) => (
             <div key={item.step} className="text-center px-4 space-y-3">
@@ -131,7 +131,7 @@ export const InteractiveProofStudio: React.FC = () => {
               <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Interactive Finish Preview
               </span>
-              <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-mono text-slate-700 dark:text-slate-400">
                 {activePreset.gsm}
               </span>
             </div>
@@ -186,7 +186,7 @@ export const InteractiveProofStudio: React.FC = () => {
           {/* Right Stacked Clean Rows */}
           <div className="lg:col-span-6 space-y-6">
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400">
+              <p className="text-xs font-bold uppercase tracking-widest text-rose-700 dark:text-rose-400">
                 Why Eyemaze Graphics
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">

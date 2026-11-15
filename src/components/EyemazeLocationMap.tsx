@@ -91,52 +91,56 @@ const StudioMapCanvas: React.FC<StudioMapCanvasProps> = ({
       internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
       className="w-full h-full"
     >
-      <AdvancedMarker
-        ref={markerRef}
-        position={EYEMAZE_LOCATION.coordinates}
-        title={`${EYEMAZE_LOCATION.businessName} — ${EYEMAZE_LOCATION.addressNepali}`}
-        onClick={() => setInfoOpen((prev) => !prev)}
-      >
-        <Pin
-          background="#F41D63"
-          borderColor="#9F1239"
-          glyphColor="#FFFFFF"
-          scale={1.15}
-        />
-      </AdvancedMarker>
+      {map && loadingStatus === APILoadingStatus.LOADED && (
+        <MapErrorBoundary fallback={null} onError={onQuotaOrAuthError}>
+          <AdvancedMarker
+            ref={markerRef}
+            position={EYEMAZE_LOCATION.coordinates}
+            title={`${EYEMAZE_LOCATION.businessName} — ${EYEMAZE_LOCATION.addressNepali}`}
+            onClick={() => setInfoOpen((prev) => !prev)}
+          >
+            <Pin
+              background="#F41D63"
+              borderColor="#9F1239"
+              glyphColor="#FFFFFF"
+              scale={1.15}
+            />
+          </AdvancedMarker>
 
-      {infoOpen && marker && (
-        <InfoWindow
-          anchor={marker}
-          maxWidth={270}
-          onCloseClick={() => setInfoOpen(false)}
-        >
-          <div className="p-1 text-slate-900 space-y-1.5 font-sans">
-            <p className="font-bold text-sm text-slate-900 leading-tight">
-              {EYEMAZE_LOCATION.businessName}
-            </p>
-            <p className="text-xs font-semibold text-rose-600">
-              {EYEMAZE_LOCATION.addressNepali}
-            </p>
-            <p className="text-[11px] text-slate-600">
-              {EYEMAZE_LOCATION.plusCode}, {EYEMAZE_LOCATION.locality}{' '}
-              {EYEMAZE_LOCATION.postalCode}
-            </p>
-            <div className="pt-1 border-t border-slate-200 flex items-center justify-between gap-2 text-[11px]">
-              <span className="font-mono text-slate-700">
-                {EYEMAZE_LOCATION.phones.join(' · ')}
-              </span>
-              <a
-                href={EYEMAZE_LOCATION.googleMapsDirectionsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-bold text-rose-600 hover:underline whitespace-nowrap"
-              >
-                Directions →
-              </a>
-            </div>
-          </div>
-        </InfoWindow>
+          {infoOpen && marker && (
+            <InfoWindow
+              anchor={marker}
+              maxWidth={270}
+              onCloseClick={() => setInfoOpen(false)}
+            >
+              <div className="p-1 text-slate-900 space-y-1.5 font-sans">
+                <p className="font-bold text-sm text-slate-900 leading-tight">
+                  {EYEMAZE_LOCATION.businessName}
+                </p>
+                <p className="text-xs font-semibold text-rose-600">
+                  {EYEMAZE_LOCATION.addressNepali}
+                </p>
+                <p className="text-[11px] text-slate-600">
+                  {EYEMAZE_LOCATION.plusCode}, {EYEMAZE_LOCATION.locality}{' '}
+                  {EYEMAZE_LOCATION.postalCode}
+                </p>
+                <div className="pt-1 border-t border-slate-200 flex items-center justify-between gap-2 text-[11px]">
+                  <span className="font-mono text-slate-700">
+                    {EYEMAZE_LOCATION.phones.join(' · ')}
+                  </span>
+                  <a
+                    href={EYEMAZE_LOCATION.googleMapsDirectionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-rose-600 hover:underline whitespace-nowrap"
+                  >
+                    Directions →
+                  </a>
+                </div>
+              </div>
+            </InfoWindow>
+          )}
+        </MapErrorBoundary>
       )}
     </GoogleMap>
   );
@@ -196,7 +200,9 @@ export const EyemazeLocationMap: React.FC = () => {
       if (
         src.includes('maps.googleapis.com') ||
         src.includes('react-google-maps') ||
-        msg.includes("reading 'keys'")
+        msg.includes("reading 'keys'") ||
+        msg.includes('getRootNode') ||
+        msg.includes('RefererNotAllowedMapError')
       ) {
         event.preventDefault();
         setMapError(true);
@@ -354,8 +360,8 @@ export const EyemazeLocationMap: React.FC = () => {
 
       {/* Interactive Map Canvas (Explicit height required per CF2) */}
       <div className="w-full h-[360px] sm:h-[420px] relative bg-slate-950">
-        {apiKey && !mapError ? (
-          <MapErrorBoundary fallback={fallbackCard} onError={handleQuotaOrAuthError}>
+        <MapErrorBoundary fallback={fallbackCard} onError={handleQuotaOrAuthError}>
+          {apiKey && !mapError ? (
             <APIProvider apiKey={apiKey} libraries={['marker']} language="en" region="NP">
               <StudioMapCanvas
                 mapType={mapType}
@@ -363,10 +369,10 @@ export const EyemazeLocationMap: React.FC = () => {
                 onQuotaOrAuthError={handleQuotaOrAuthError}
               />
             </APIProvider>
-          </MapErrorBoundary>
-        ) : (
-          fallbackCard
-        )}
+          ) : (
+            fallbackCard
+          )}
+        </MapErrorBoundary>
       </div>
 
       {/* Bottom Exact Coordinates & Direct Phone Strip */}

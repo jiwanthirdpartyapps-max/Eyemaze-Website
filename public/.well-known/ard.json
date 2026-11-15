@@ -1,0 +1,37 @@
+{
+  "specVersion": "0.91",
+  "host": {
+    "displayName": "Eyemaze Graphics Enterprises",
+    "identifier": "eyemaze.com.np",
+    "documentationUrl": "https://www.eyemaze.com.np/llms.txt",
+    "trustManifest": {
+      "identity": "https://www.eyemaze.com.np"
+    }
+  },
+  "entries": [
+    {
+      "@context": "https://agenticresourcediscovery.org/context/v1",
+      "identifier": "urn:air:eyemaze.com.np:services:commercial-printing",
+      "displayName": "Eyemaze Commercial Offset & Digital Print Services",
+      "type": "application/json",
+      "url": "https://www.eyemaze.com.np/llms.txt",
+      "description": "Commercial Heidelberg offset printing, 350+ GSM gold foil visiting cards, UV Star Flex banners, custom rigid packaging boxes, graphic design, and commercial studio photography in Marin-6, Chhap, Sindhuli (Bagmati Province 45912, Nepal).",
+      "capabilities": [
+        "OffsetPrinting",
+        "VisitingCardsAndStationery",
+        "LargeFormatStarFlex",
+        "CustomPackagingDielines",
+        "BrandIdentityDesign",
+        "PrintCostEstimation"
+      ],
+      "representativeQueries": [
+        "Where is Eyemaze Graphics Enterprises located in Sindhuli Nepal?",
+        "What is the phone number and Google Maps link for Eyemaze Graphics Enterprises?",
+        "What commercial printing, gold foil visiting card, and packaging services does Eyemaze offer?"
+      ],
+      "trustManifest": {
+        "identity": "https://www.eyemaze.com.np"
+      }
+    }
+  ]
+}

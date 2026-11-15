@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Play, Pause, Volume2, VolumeX, CheckCircle2, ShieldCheck, Gauge } from 'lucide-react';
+import pressHeroImg from '../assets/images/printing_press_hero_1794657251905.jpg';
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -41,7 +42,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
         {/* Video Canvas Simulation */}
         <div className="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
           <img
-            src="/src/assets/images/printing_press_hero_1794657251905.jpg"
+            src={pressHeroImg}
             alt="Heidelberg Speedmaster multi-color offset press in action at Eyemaze मरिण–६, छाप, सिन्धुली"
             className={`w-full h-full object-cover transition-opacity duration-300 ${isPlaying ? 'opacity-90 scale-105 transition-transform duration-1000' : 'opacity-60'}`}
           />

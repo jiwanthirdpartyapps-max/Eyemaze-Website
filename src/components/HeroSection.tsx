@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import printingPressHeroImg from '../assets/images/printing_press_hero_1794657251905.jpg';
 import {
   Play,
   ArrowRight,
@@ -58,8 +58,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       <section className="relative overflow-hidden bg-[#0c101d] text-white pt-12 pb-36 lg:pb-32 px-6">
         {/* Background Image: Offset Press & Creator Studio Atmosphere */}
         <img
-          src="/src/assets/images/printing_press_hero_1794657251905.jpg"
+          src={printingPressHeroImg}
           alt="Eyemaze Graphics Enterprises commercial printing press and graphic design studio at मरिण–६, छाप, सिन्धुली, नेपाल"
+          width={1280}
+          height={714}
+          fetchPriority="high"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-35"
         />
         <div
@@ -69,12 +73,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Hero Copy */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="lg:col-span-6 space-y-6"
-          >
+          <div className="lg:col-span-6 space-y-6">
             {/* Studio Address & Map Direct Link */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm text-slate-300">
               <a
@@ -154,15 +153,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Right Hero Showcase: Floating Tilted 3D Eyemaze Card + Realistic Phone Simulator */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.1 }}
-            className="lg:col-span-6 relative flex items-center justify-center lg:justify-end min-h-[500px]"
-          >
+          <div className="lg:col-span-6 relative flex items-center justify-center lg:justify-end min-h-[500px]">
             {/* Floating Tilted 3D Gradient Card (Payowire Signature) */}
             <div className="hidden sm:flex flex-col justify-between absolute -left-8 sm:left-4 md:left-8 bottom-16 w-64 h-40 rounded-2xl p-5 brand-gradient text-white shadow-2xl -rotate-12 z-20 border border-white/30 select-none">
               {/* Chip and Logo */}
@@ -278,7 +272,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
                   {/* Quick Actions (8 Icons in 2x4 Grid matching Payowire) */}
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-2">
                       QUICK ACTIONS
                     </p>
                     <div className="grid grid-cols-4 gap-2">
@@ -382,7 +376,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
