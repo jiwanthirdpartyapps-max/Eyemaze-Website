@@ -17,13 +17,15 @@ import {
   WifiOff,
   Sparkles,
   X,
+  ExternalLink,
+  Globe,
 } from 'lucide-react';
 import {
   INITIAL_AUDIT_CHECKPOINTS,
   deduplicateRecords,
   generateGoogleServicesJson,
 } from '../utils/migrationLogic';
-import { testFirestoreConnection } from '../firebase';
+import { testFirestoreConnection, FIREBASE_PROJECT_ID } from '../firebase';
 
 interface FirebaseIntegrationHubProps {
   onClose?: () => void;
@@ -39,6 +41,23 @@ export const FirebaseIntegrationHub: React.FC<FirebaseIntegrationHubProps> = ({ 
   const [transactionVerified, setTransactionVerified] = useState(false);
   const [firestoreOnline, setFirestoreOnline] = useState<boolean>(true);
   const [dedupSummary, setDedupSummary] = useState<{ imported: number; removed: number } | null>(null);
+  const [copiedDomain, setCopiedDomain] = useState<string | null>(null);
+
+  const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+  const authorizedDomainsList = Array.from(
+    new Set([
+      ...(currentHost ? [currentHost] : []),
+      'jj.4jsm-life.workers.dev',
+      'ais-dev-kb5whbwhogqfr4ny7zic7a-474499258610.us-east1.run.app',
+      'ais-pre-kb5whbwhogqfr4ny7zic7a-474499258610.us-east1.run.app',
+    ])
+  );
+
+  const handleCopyDomain = (domain: string) => {
+    navigator.clipboard?.writeText(domain).catch(() => {});
+    setCopiedDomain(domain);
+    setTimeout(() => setCopiedDomain(null), 2000);
+  };
 
   useEffect(() => {
     testFirestoreConnection().then(setFirestoreOnline).catch(() => setFirestoreOnline(false));
@@ -359,6 +378,52 @@ export const FirebaseIntegrationHub: React.FC<FirebaseIntegrationHubProps> = ({ 
                   Firebase Hosting मा <code>auth.eyemaze.com.np</code> जोडी OAuth Redirect URI मा <code>https://auth.eyemaze.com.np/__/auth/handler</code> थप्नुहोस् र env मा <code>VITE_FIREBASE_AUTH_DOMAIN=auth.eyemaze.com.np</code> सेट गर्नुहोस्।
                 </p>
               </div>
+            </div>
+          </div>
+
+          {/* Authorized Domains Checklist */}
+          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/40 space-y-3 text-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
+                <Globe className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span>Firebase Auth Authorized Domains (Popup Login Allowlist)</span>
+              </div>
+              <a
+                href={`https://console.firebase.google.com/project/${FIREBASE_PROJECT_ID}/authentication/settings`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[11px] w-fit transition-colors"
+              >
+                <span>Open Authorized Domains Settings</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <p className="text-slate-600 dark:text-slate-400 text-[11px]">
+              यदि Google Sign-In गर्दा <code className="font-mono">auth/unauthorized-domain</code> आयो भने तलका deployment domain हरू Firebase Console → Authentication → Settings → Authorized domains मा थप्नुहोस्:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {authorizedDomainsList.map((domain) => (
+                <div
+                  key={domain}
+                  className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                >
+                  <code className="font-mono text-[11px] text-slate-800 dark:text-slate-200 truncate">
+                    {domain}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyDomain(domain)}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-[11px] font-semibold shrink-0 cursor-pointer"
+                  >
+                    {copiedDomain === domain ? (
+                      <Check className="w-3 h-3 text-emerald-500" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                    <span>{copiedDomain === domain ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>

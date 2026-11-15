@@ -8,8 +8,11 @@ import {
   Loader2,
   UserPlus,
   Lock,
+  Copy,
+  Check,
+  ExternalLink,
 } from 'lucide-react';
-import { signInWithGoogle } from '../firebase';
+import { signInWithGoogle, FIREBASE_PROJECT_ID } from '../firebase';
 import type { UserProfile } from '../utils/dashboardLogic';
 
 interface LoginModalProps {
@@ -25,13 +28,25 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [unauthorizedHost, setUnauthorizedHost] = useState<string | null>(null);
+  const [copiedHost, setCopiedHost] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'android'>('login');
 
   if (!isOpen) return null;
 
+  const currentHostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const firebaseAuthSettingsUrl = `https://console.firebase.google.com/project/${FIREBASE_PROJECT_ID}/authentication/settings`;
+
+  const handleCopyHost = (host: string) => {
+    navigator.clipboard?.writeText(host).catch(() => {});
+    setCopiedHost(true);
+    setTimeout(() => setCopiedHost(false), 2000);
+  };
+
   const handleGoogleAuth = async () => {
     setLoading(true);
     setAuthError(null);
+    setUnauthorizedHost(null);
     try {
       const profile = await signInWithGoogle();
       onLoginSuccess(profile);
@@ -46,8 +61,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       } else if (code === 'auth/popup-blocked') {
         setAuthError('Popup was blocked by your browser. Please allow popups for Google sign-in.');
       } else if (code === 'auth/unauthorized-domain') {
+        setUnauthorizedHost(currentHostname || 'this domain');
         setAuthError(
-          'This domain is not yet authorized in Firebase Auth settings. Check Firebase Console → Authorized domains.'
+          `Domain "${currentHostname || 'current host'}" is not yet authorized in Firebase Auth settings for project ${FIREBASE_PROJECT_ID}.`
+        );
+      } else if (code === 'auth/verification-sent') {
+        setAuthError(
+          err instanceof Error
+            ? `${err.message} (तपाईंको इमेलमा verification लिंक पठाइएको छ — लिंक क्लिक गरेपछि पुनः साइन इन गर्नुहोस्।)`
+            : 'Verification link sent to your email inbox. Verify and sign in again.'
+        );
+      } else if (code === 'auth/email-not-verified') {
+        setAuthError(
+          'तपाईंको Google Account को इमेल Verified छैन (email_verified = false)। सुरक्षा नियमअनुसार Verified Gmail खाता प्रयोग गर्नुहोस् वा Firebase Console → Authentication → Settings → User account linking मा "Link accounts that use the same email" सेट गर्नुहोस्।'
         );
       } else {
         setAuthError(
@@ -150,10 +176,46 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               {authError && (
                 <div
                   role="alert"
-                  className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2.5"
+                  className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 space-y-2.5"
                 >
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{authError}</span>
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{authError}</span>
+                  </div>
+
+                  {unauthorizedHost && (
+                    <div className="pt-2 border-t border-rose-200/80 dark:border-rose-800/60 space-y-2">
+                      <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/80 dark:bg-slate-900/70 border border-rose-200 dark:border-rose-900">
+                        <code className="font-mono text-[11px] font-semibold text-slate-900 dark:text-white truncate">
+                          {unauthorizedHost}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyHost(unauthorizedHost)}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-[11px] font-semibold shrink-0 cursor-pointer"
+                        >
+                          {copiedHost ? (
+                            <Check className="w-3 h-3 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                          <span>{copiedHost ? 'Copied' : 'Copy'}</span>
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-rose-700/90 dark:text-rose-300/90 leading-relaxed">
+                        Add this domain under Authentication → Settings → Authorized domains, then click Continue with Google again.
+                      </p>
+                      <a
+                        href={firebaseAuthSettingsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-[11px] transition-colors"
+                      >
+                        <span>Open Firebase Authorized Domains</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
 
