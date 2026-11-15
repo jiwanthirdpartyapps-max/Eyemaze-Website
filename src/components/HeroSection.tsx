@@ -57,7 +57,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Background Image: Offset Press & Creator Studio Atmosphere */}
         <img
           src="/src/assets/images/printing_press_hero_1794657251905.jpg"
-          alt="Eyemaze Heidelberg offset printing press and design facility in Kathmandu"
+          alt="Eyemaze Graphics Enterprises commercial printing press and graphic design studio at मरिण–६, छाप, सिन्धुली, नेपाल"
           className="absolute inset-0 w-full h-full object-cover opacity-35"
         />
         <div

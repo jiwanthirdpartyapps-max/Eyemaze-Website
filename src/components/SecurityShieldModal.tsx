@@ -18,7 +18,7 @@ export const SecurityShieldModal: React.FC<SecurityShieldModalProps> = ({ isOpen
     { id: 1, name: 'AES-256 Bit Transport Layer Security (TLS 1.3)', status: 'Verified' },
     { id: 2, name: 'AI Prompt Injection & LLM Jailbreak Firewall', status: 'Active' },
     { id: 3, name: 'Zero-Knowledge Client Artwork Cryptographic Hashing', status: 'Secured' },
-    { id: 4, name: 'Bagbazar Secure Vault Data Residency & GDPR/ISO 27001', status: 'Compliant' },
+    { id: 4, name: 'मरिण–६, सिन्धुली Secure Vault Data Residency & GDPR/ISO 27001', status: 'Compliant' },
     { id: 5, name: 'XSS & SQL Injection Sanitization Engine', status: 'Protected' },
   ]);
 

@@ -21,7 +21,9 @@ import { SecurityShieldModal } from './components/SecurityShieldModal';
 import { LoginModal } from './components/LoginModal';
 import { UserDashboard } from './components/UserDashboard';
 import { FirebaseIntegrationHub } from './components/FirebaseIntegrationHub';
+import { EyemazeLocationMap } from './components/EyemazeLocationMap';
 import { INITIAL_PRINT_ORDERS } from './data/eyemazeData';
+import { EYEMAZE_LOCATION } from './data/eyemazeLocation';
 import { type UserProfile } from './utils/dashboardLogic';
 import { subscribeToAuthChanges, signOutFirebase } from './firebase';
 import type { PrintCategory, PrintFinish, PrintOrder } from './utils/printPricing';
@@ -43,6 +45,13 @@ export default function App() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [firebaseHubModalOpen, setFirebaseHubModalOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [mapsQuotaExceeded, setMapsQuotaExceeded] = useState(false);
+
+  useEffect(() => {
+    const onQuotaExceeded = () => setMapsQuotaExceeded(true);
+    window.addEventListener('gmp-quota-exceeded', onQuotaExceeded);
+    return () => window.removeEventListener('gmp-quota-exceeded', onQuotaExceeded);
+  }, []);
 
   // Observe real Firebase Auth state so every signed-in Google user gets their own profile
   useEffect(() => {
@@ -165,6 +174,22 @@ export default function App() {
   // PUBLIC MARKETING SITE: 1000% Exact Payowire Visual Clone
   return (
     <div className={`min-h-screen transition-colors duration-200 ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
+      {mapsQuotaExceeded && (
+        <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm">
+          <span>
+            Google Maps Platform quota reached. If you are the app owner, visit{' '}
+            <a
+              href="https://developers.google.com/maps/ai/ai-studio?utm_campaign=gmp_mcp_codeassist_v1_aistudio#quota_exceeded_errors"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline font-semibold text-amber-950 hover:text-amber-800"
+            >
+              maps developer site
+            </a>{' '}
+            for instructions to update your account.
+          </span>
+        </div>
+      )}
       {/* 1. Payowire-Style Header / Navbar */}
       <Navbar
         onOpenOrderPortal={handleJumpToPortal}
@@ -247,27 +272,37 @@ export default function App() {
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6 space-y-6">
               <p className="text-xs font-bold uppercase tracking-widest text-rose-400">
-                Kathmandu Press Studio
+                {EYEMAZE_LOCATION.addressNepali} · Press Studio
               </p>
               <h2 className="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-balance">
                 Send your artwork or schedule a studio shoot
               </h2>
               <p className="text-slate-300 text-base leading-relaxed max-w-lg">
-                Visit our Bagbazar press desk for physical paper stock samples or submit your job requirements online for a same-day quotation.
+                Visit our press desk at {EYEMAZE_LOCATION.addressNepali} ({EYEMAZE_LOCATION.plusCode}, {EYEMAZE_LOCATION.locality}) for physical paper stock samples or submit your job requirements online for a same-day quotation.
               </p>
 
               <div className="space-y-3.5 pt-2 text-sm text-slate-300">
                 <div className="flex items-center gap-3">
                   <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
-                  <span>Bagbazar, Kathmandu, Nepal</span>
+                  <span>
+                    {EYEMAZE_LOCATION.addressNepali} ({EYEMAZE_LOCATION.addressEnglish})
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-rose-400 shrink-0" />
-                  <span>orders@eyemaze.com.np</span>
+                  <span>{EYEMAZE_LOCATION.email}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Phone className="w-4 h-4 text-rose-400 shrink-0" />
-                  <span>+977 1-4240000 · +977 9841000000</span>
+                  <span>
+                    <a href="tel:+9779844251392" className="hover:text-white transition-colors">
+                      +977 9844251392
+                    </a>{' '}
+                    ·{' '}
+                    <a href="tel:+9779814850300" className="hover:text-white transition-colors">
+                      +977 9814850300
+                    </a>
+                  </span>
                 </div>
               </div>
             </div>
@@ -371,6 +406,10 @@ export default function App() {
                 </form>
               )}
             </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto mt-12">
+            <EyemazeLocationMap />
           </div>
         </section>
       </main>

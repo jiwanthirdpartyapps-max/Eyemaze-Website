@@ -4,10 +4,6 @@ import {
   ShieldCheck,
   Lock,
   Unlock,
-  Eye,
-  EyeOff,
-  Copy,
-  Check,
   KeyRound,
   CheckCircle2,
   AlertCircle,
@@ -17,6 +13,7 @@ import {
   Receipt,
   Sparkles,
 } from 'lucide-react';
+import { VirtualCard } from './VirtualCard';
 import type { UserProfile, WalletTransaction } from '../utils/dashboardLogic';
 import {
   type CardNetwork,
@@ -58,7 +55,6 @@ export const VirtualCardsStudio: React.FC<VirtualCardsStudioProps> = ({
     Record<string, { pan: string; cvv: string }>
   >({});
   const [revealedCardId, setRevealedCardId] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loadingCards, setLoadingCards] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [statusError, setStatusError] = useState<string | null>(null);
@@ -155,12 +151,6 @@ export const VirtualCardsStudio: React.FC<VirtualCardsStudioProps> = ({
     } catch (err) {
       setStatusError(err instanceof Error ? err.message : 'Unable to update card lock state.');
     }
-  };
-
-  const handleCopyPan = (cardId: string, text: string) => {
-    navigator.clipboard?.writeText(text).catch(() => {});
-    setCopiedId(cardId);
-    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleAutofillForLinking = (card: VirtualCardTokenized) => {
@@ -430,129 +420,65 @@ export const VirtualCardsStudio: React.FC<VirtualCardsStudioProps> = ({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {cards.map((card) => {
               const secret = ephemeralSecrets[card.id];
-              const isRevealed = revealedCardId === card.id && Boolean(secret);
+              const isRevealed = revealedCardId === card.id;
               return (
                 <div
                   key={card.id}
-                  className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/40 p-4 space-y-4"
+                  className="rounded-3xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/40 p-5"
                 >
-                  {/* Visual Card */}
-                  <div
-                    className={`h-44 rounded-2xl p-5 text-white shadow-lg flex flex-col justify-between transition-opacity ${
-                      card.network === 'VISA'
-                        ? 'brand-gradient'
-                        : 'bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800'
-                    } ${card.status === 'frozen' ? 'opacity-60 grayscale' : ''}`}
-                  >
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold tracking-widest">PAYOWIRE · 3DS 2.2</span>
-                      <span className="font-extrabold italic tracking-wide">{card.network}</span>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <p className="font-mono text-base sm:text-lg tracking-widest font-bold">
-                        {isRevealed && secret ? formatPanSpaced(secret.pan) : card.maskedPan}
-                      </p>
-                      <div className="flex justify-between items-center text-[10px] font-mono opacity-90">
-                        <span className="truncate max-w-[160px]">{card.cardholderName}</span>
-                        <div className="flex items-center gap-3">
-                          <span>
-                            EXP {card.expiryMonth}/{card.expiryYear}
-                          </span>
-                          <span>CVV {isRevealed && secret ? secret.cvv : '•••'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Badges & Status */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px]">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full font-bold ${
-                          card.status === 'active'
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                            : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
-                        }`}
-                      >
-                        {card.status === 'active' ? 'Active' : 'Frozen'}
-                      </span>
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full font-bold ${
-                          card.isLinkedVerified
-                            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'
-                            : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
-                        }`}
-                      >
-                        {card.isLinkedVerified ? 'Linked & 3DS Verified' : 'Pending Link Verification'}
-                      </span>
-                    </div>
-                    <span className="font-mono text-slate-500">Limit: ${card.spendingLimitUsd}</span>
-                  </div>
-
-                  {/* Card Actions */}
-                  <div className="flex flex-wrap items-center gap-2 pt-1">
-                    {secret && (
+                  <VirtualCard
+                    cardId={card.id}
+                    network={card.network}
+                    cardholderName={card.cardholderName}
+                    pan={secret?.pan}
+                    maskedPan={card.maskedPan}
+                    last4={card.last4}
+                    expiryMonth={card.expiryMonth}
+                    expiryYear={card.expiryYear}
+                    cvv={secret?.cvv}
+                    status={card.status}
+                    isLinkedVerified={card.isLinkedVerified}
+                    spendingLimitUsd={card.spendingLimitUsd}
+                    isRevealed={isRevealed}
+                    onToggleReveal={() => setRevealedCardId(isRevealed ? null : card.id)}
+                    extraActions={
                       <>
                         <button
                           type="button"
-                          onClick={() =>
-                            setRevealedCardId(isRevealed ? null : card.id)
-                          }
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-1 cursor-pointer"
+                          onClick={() => handleToggleFreeze(card)}
+                          className="min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                         >
-                          {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                          <span>{isRevealed ? 'Hide' : 'Reveal PAN'}</span>
+                          {card.status === 'active' ? (
+                            <Lock className="w-3.5 h-3.5 text-amber-500" />
+                          ) : (
+                            <Unlock className="w-3.5 h-3.5 text-emerald-500" />
+                          )}
+                          <span>{card.status === 'active' ? 'Freeze' : 'Unfreeze'}</span>
                         </button>
+
                         <button
                           type="button"
-                          onClick={() => handleCopyPan(card.id, secret.pan)}
-                          className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-1 cursor-pointer"
+                          onClick={() => handleAutofillForLinking(card)}
+                          className="min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                         >
-                          {copiedId === card.id ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-500" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                          <span>{copiedId === card.id ? 'Copied' : 'Copy PAN'}</span>
+                          <Link2 className="w-3.5 h-3.5" />
+                          <span>Verify Link</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleStartSandboxCheckout(card)}
+                          className="min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#FF5B14] hover:bg-[#e04b08] text-white inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+                        >
+                          <KeyRound className="w-3.5 h-3.5" />
+                          <span>Test 3DS OTP ($15)</span>
                         </button>
                       </>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => handleToggleFreeze(card)}
-                      className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-1 cursor-pointer"
-                    >
-                      {card.status === 'active' ? (
-                        <Lock className="w-3.5 h-3.5 text-amber-500" />
-                      ) : (
-                        <Unlock className="w-3.5 h-3.5 text-emerald-500" />
-                      )}
-                      <span>{card.status === 'active' ? 'Freeze' : 'Unfreeze'}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleAutofillForLinking(card)}
-                      className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1 cursor-pointer"
-                    >
-                      <Link2 className="w-3.5 h-3.5" />
-                      <span>Verify Link</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleStartSandboxCheckout(card)}
-                      className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#FF5B14] hover:bg-[#e04b08] text-white flex items-center gap-1 cursor-pointer ml-auto"
-                    >
-                      <KeyRound className="w-3.5 h-3.5" />
-                      <span>Test 3DS OTP ($15)</span>
-                    </button>
-                  </div>
+                    }
+                  />
                 </div>
               );
             })}

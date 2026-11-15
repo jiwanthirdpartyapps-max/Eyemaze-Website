@@ -163,7 +163,7 @@ export const PrintPortalDashboard: React.FC<PrintPortalDashboardProps> = ({
             </p>
           </div>
           <div className="text-xs font-mono text-slate-500 dark:text-slate-400">
-            Bagbazar Press · Currency: NPR
+            मरिण–६, छाप, सिन्धुली Press · Currency: NPR
           </div>
         </div>
 
@@ -513,7 +513,7 @@ export const PrintPortalDashboard: React.FC<PrintPortalDashboardProps> = ({
 
               <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
                 <span>Showing {filteredOrders.length} of {orders.length} press jobs</span>
-                <span>Updated live from Kathmandu Press Floor</span>
+                <span>Updated live from मरिण–६, छाप Press Floor</span>
               </div>
             </div>
           </div>

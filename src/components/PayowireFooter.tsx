@@ -1,5 +1,6 @@
 import React from 'react';
-import { Star, MapPin, Mail, Phone, Clock, ShieldCheck } from 'lucide-react';
+import { Star, MapPin, Mail, Phone, Clock, ShieldCheck, ExternalLink } from 'lucide-react';
+import { EYEMAZE_LOCATION } from '../data/eyemazeLocation';
 
 interface PayowireFooterProps {
   onOpenSecurity: () => void;
@@ -52,10 +53,10 @@ export const PayowireFooter: React.FC<PayowireFooterProps> = ({ onOpenSecurity }
               </span>
             </div>
             <p className="leading-relaxed text-slate-400">
-              Eyemaze Graphics Enterprises — Kathmandu's premier Heidelberg offset press, creative packaging studio, luxury stationery manufacturer, and commercial photography studio.
+              Eyemaze Graphics Enterprises (eyemaze.com.np) — मरिण–६, छाप, सिन्धुली (Marin-6, Chhap, Sindhuli) मा आधारित कमर्सियल प्रिन्टिङ, ग्राफिक डिजाइन, प्याकेजिङ तथा स्टेसनरी व्यवसाय।
             </p>
             <div className="text-[11px] text-slate-500 font-mono">
-              VAT Reg: 601234567 · Kathmandu, Nepal
+              eyemaze.com.np · {EYEMAZE_LOCATION.addressNepali} ({EYEMAZE_LOCATION.plusCode})
             </div>
           </div>
 
@@ -139,15 +140,36 @@ export const PayowireFooter: React.FC<PayowireFooterProps> = ({ onOpenSecurity }
             <div className="space-y-2.5 text-slate-400">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                <span>Bagbazar, Kathmandu, Nepal</span>
+                <div>
+                  <span className="block text-slate-200 font-medium">
+                    {EYEMAZE_LOCATION.addressNepali}
+                  </span>
+                  <a
+                    href={EYEMAZE_LOCATION.googleMapsPlaceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] text-rose-400 hover:text-rose-300 mt-0.5"
+                  >
+                    <span>Google Maps ({EYEMAZE_LOCATION.plusCode})</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-rose-500 shrink-0" />
-                <span>orders@eyemaze.com.np</span>
+                <span>{EYEMAZE_LOCATION.email}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-rose-500 shrink-0" />
-                <span>+977 1-4240000 · +977 9841000000</span>
+                <span>
+                  <a href="tel:+9779844251392" className="hover:text-white transition-colors">
+                    9844251392
+                  </a>{' '}
+                  ·{' '}
+                  <a href="tel:+9779814850300" className="hover:text-white transition-colors">
+                    9814850300
+                  </a>
+                </span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Clock className="w-4 h-4 text-rose-500 shrink-0" />

@@ -8,6 +8,9 @@ import {
   create3dsChallenge,
   verify3dsOtpChallenge,
   computePanFingerprint,
+  resolveVirtualCardDisplay,
+  createWalletProvisioningPass,
+  formatPanSpaced,
 } from './virtualCardLogic';
 
 test('generateVirtualCard produces Luhn-valid VISA and MASTERCARD PANs with PCI-safe tokenized fields', () => {
@@ -121,3 +124,90 @@ test('EMV 3DS 2.2 OTP challenge succeeds with valid OTP and locks after 3 wrong 
   assert.equal(expired.challenge.status, 'EXPIRED');
   assert.equal(expired.receipt, undefined);
 });
+
+test('resolveVirtualCardDisplay provides banking placeholders and toggles Show/Hide accurately', () => {
+  // Placeholder state (no card issued yet)
+  const placeholderHidden = resolveVirtualCardDisplay({
+    cardholderName: '',
+    isRevealed: false,
+  });
+  assert.equal(placeholderHidden.cardholderName, 'CARD HOLDER NAME');
+  assert.equal(placeholderHidden.isPlaceholderHolder, true);
+  assert.equal(placeholderHidden.cardNumberDisplay, '•••• •••• •••• 0000');
+  assert.equal(placeholderHidden.expiryDisplay, 'MM/YY');
+  assert.equal(placeholderHidden.cvvDisplay, '•••');
+  assert.equal(placeholderHidden.canRevealFullSecrets, false);
+
+  // Real issued card state
+  const card = generateVirtualCard({
+    userId: 'uid_display',
+    cardholderName: 'Jiwan Majhi',
+    network: 'VISA',
+    now: new Date('2026-11-15T00:00:00Z'),
+    seedHint: 'display-seed',
+  });
+
+  const masked = resolveVirtualCardDisplay({
+    cardholderName: card.cardholderName,
+    pan: card.pan,
+    maskedPan: card.maskedPan,
+    last4: card.last4,
+    expiryMonth: card.expiryMonth,
+    expiryYear: card.expiryYear,
+    cvv: card.cvv,
+    network: card.network,
+    isRevealed: false,
+  });
+  assert.equal(masked.cardholderName, 'JIWAN MAJHI');
+  assert.equal(masked.cardNumberDisplay, `•••• •••• •••• ${card.last4}`);
+  assert.equal(masked.cvvDisplay, '•••');
+  assert.equal(masked.canRevealFullSecrets, true);
+
+  const revealed = resolveVirtualCardDisplay({
+    cardholderName: card.cardholderName,
+    pan: card.pan,
+    maskedPan: card.maskedPan,
+    last4: card.last4,
+    expiryMonth: card.expiryMonth,
+    expiryYear: card.expiryYear,
+    cvv: card.cvv,
+    network: card.network,
+    isRevealed: true,
+  });
+  assert.equal(revealed.cardNumberDisplay, formatPanSpaced(card.pan));
+  assert.equal(revealed.expiryDisplay, '11/30');
+  assert.equal(revealed.cvvDisplay, card.cvv);
+});
+
+test('createWalletProvisioningPass mints distinct DPAN passes for Apple Wallet and Google Wallet', () => {
+  const applePass = createWalletProvisioningPass({
+    platform: 'APPLE_WALLET',
+    cardId: 'crd_101',
+    network: 'VISA',
+    cardholderName: 'Sita Sharma',
+    expiryMonth: '11',
+    expiryYear: '30',
+    last4: '4821',
+    nowMs: 1_700_000_000_000,
+  });
+  assert.equal(applePass.walletLabel, 'Apple Wallet');
+  assert.notEqual(applePass.dpanLast4, '4821');
+  assert.equal(applePass.tokenRequestorId, '40010030273');
+  assert.equal(applePass.dpanMasked, `•••• •••• •••• ${applePass.dpanLast4}`);
+
+  const googlePass = createWalletProvisioningPass({
+    platform: 'GOOGLE_WALLET',
+    cardId: 'crd_101',
+    network: 'VISA',
+    cardholderName: 'Sita Sharma',
+    expiryMonth: '11',
+    expiryYear: '30',
+    last4: '4821',
+    nowMs: 1_700_000_000_000,
+  });
+  assert.equal(googlePass.walletLabel, 'Google Wallet');
+  assert.notEqual(googlePass.dpanLast4, '4821');
+  assert.equal(googlePass.tokenRequestorId, '40010075001');
+  assert.notEqual(applePass.deviceProvisioningId, googlePass.deviceProvisioningId);
+});
+

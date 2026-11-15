@@ -54,6 +54,32 @@ export interface ThreeDsReceipt {
   approvedAtIso: string;
 }
 
+export type WalletPlatform = 'APPLE_WALLET' | 'GOOGLE_WALLET';
+
+export interface WalletProvisioningPass {
+  platform: WalletPlatform;
+  walletLabel: 'Apple Wallet' | 'Google Wallet';
+  dpanMasked: string;
+  dpanLast4: string;
+  tokenRequestorId: string;
+  deviceProvisioningId: string;
+  network: CardNetwork;
+  cardholderName: string;
+  expiryDisplay: string;
+  provisionedAtIso: string;
+}
+
+export interface VirtualCardDisplayState {
+  cardholderName: string;
+  isPlaceholderHolder: boolean;
+  cardNumberDisplay: string;
+  isPlaceholderNumber: boolean;
+  expiryDisplay: string;
+  isPlaceholderExpiry: boolean;
+  cvvDisplay: string;
+  canRevealFullSecrets: boolean;
+}
+
 /**
  * Computes the ISO/IEC 7812 Luhn check digit for a partial PAN payload (first 15 digits).
  */
@@ -319,3 +345,122 @@ export function verify3dsOtpChallenge(
     },
   };
 }
+
+/**
+ * Resolves cardholder, masked/revealed PAN, expiry, and CVV strings with crisp banking placeholders.
+ */
+export function resolveVirtualCardDisplay(params: {
+  cardholderName?: string | null;
+  pan?: string | null;
+  maskedPan?: string | null;
+  last4?: string | null;
+  expiryMonth?: string | null;
+  expiryYear?: string | null;
+  cvv?: string | null;
+  network?: CardNetwork;
+  isRevealed: boolean;
+}): VirtualCardDisplayState {
+  const cleanedHolder = (params.cardholderName || '').trim();
+  const isPlaceholderHolder = cleanedHolder.length === 0;
+  const cardholderName = isPlaceholderHolder ? 'CARD HOLDER NAME' : cleanedHolder.toUpperCase();
+
+  const rawPanDigits = (params.pan || '').replace(/\D/g, '');
+  const hasFullPan = rawPanDigits.length >= 13;
+  const cleanLast4 = (params.last4 || rawPanDigits.slice(-4) || '').replace(/\D/g, '').slice(-4);
+  const isPlaceholderNumber = !hasFullPan && !params.maskedPan && cleanLast4.length === 0;
+
+  let cardNumberDisplay: string;
+  if (params.isRevealed && hasFullPan) {
+    cardNumberDisplay = formatPanSpaced(rawPanDigits);
+  } else if (params.isRevealed && cleanLast4.length === 4) {
+    const binPrefix = params.network === 'MASTERCARD' ? '5412' : '4539';
+    cardNumberDisplay = `${binPrefix} •••• •••• ${cleanLast4}`;
+  } else if (params.isRevealed && isPlaceholderNumber) {
+    const binPrefix = params.network === 'MASTERCARD' ? '5412' : '4539';
+    cardNumberDisplay = `${binPrefix} •••• •••• 0000`;
+  } else if (params.maskedPan && params.maskedPan.trim().length > 0) {
+    cardNumberDisplay = params.maskedPan.trim();
+  } else if (cleanLast4.length === 4) {
+    cardNumberDisplay = `•••• •••• •••• ${cleanLast4}`;
+  } else {
+    cardNumberDisplay = '•••• •••• •••• 0000';
+  }
+
+  const mm = (params.expiryMonth || '').replace(/\D/g, '').padStart(2, '0');
+  const yy = (params.expiryYear || '').replace(/\D/g, '').slice(-2).padStart(2, '0');
+  const hasValidExpiry =
+    Boolean(params.expiryMonth && params.expiryYear) &&
+    Number(mm) >= 1 &&
+    Number(mm) <= 12;
+
+  const isPlaceholderExpiry = !hasValidExpiry;
+  const expiryDisplay = hasValidExpiry ? `${mm}/${yy}` : 'MM/YY';
+
+  const cleanCvv = (params.cvv || '').replace(/\D/g, '').slice(0, 4);
+  const cvvDisplay = params.isRevealed && cleanCvv.length >= 3 ? cleanCvv : '•••';
+
+  return {
+    cardholderName,
+    isPlaceholderHolder,
+    cardNumberDisplay,
+    isPlaceholderNumber,
+    expiryDisplay,
+    isPlaceholderExpiry,
+    cvvDisplay,
+    canRevealFullSecrets: hasFullPan && cleanCvv.length >= 3,
+  };
+}
+
+/**
+ * Generates an EMVCo Payment Tokenisation DPAN pass payload for Apple Wallet or Google Wallet.
+ */
+export function createWalletProvisioningPass(params: {
+  platform: WalletPlatform;
+  cardId?: string;
+  network: CardNetwork;
+  cardholderName?: string | null;
+  expiryMonth?: string | null;
+  expiryYear?: string | null;
+  last4?: string | null;
+  nowMs?: number;
+}): WalletProvisioningPass {
+  const nowMs = params.nowMs ?? Date.now();
+  const display = resolveVirtualCardDisplay({
+    cardholderName: params.cardholderName,
+    last4: params.last4,
+    expiryMonth: params.expiryMonth,
+    expiryYear: params.expiryYear,
+    network: params.network,
+    isRevealed: false,
+  });
+
+  const seedInput = `${params.platform}|${params.cardId || 'preview'}|${params.last4 || '0000'}|${params.network}`;
+  const fpHex = computePanFingerprint(
+    params.last4 || '4539000000000000',
+    params.expiryMonth || '11',
+    params.expiryYear || '30',
+    seedInput
+  ).replace('fp_', '');
+
+  // Convert hex fingerprint into deterministic 4-digit DPAN tail that differs from FPAN last4
+  let dpanNum = (parseInt(fpHex.slice(0, 6), 16) % 9000) + 1000;
+  if (String(dpanNum) === (params.last4 || '0000')) {
+    dpanNum = ((dpanNum + 137) % 9000) + 1000;
+  }
+  const dpanLast4 = String(dpanNum);
+
+  const isApple = params.platform === 'APPLE_WALLET';
+  return {
+    platform: params.platform,
+    walletLabel: isApple ? 'Apple Wallet' : 'Google Wallet',
+    dpanMasked: `•••• •••• •••• ${dpanLast4}`,
+    dpanLast4,
+    tokenRequestorId: isApple ? '40010030273' : '40010075001',
+    deviceProvisioningId: `${isApple ? 'apay' : 'gpay'}_${fpHex.slice(0, 10)}`,
+    network: params.network,
+    cardholderName: display.cardholderName,
+    expiryDisplay: display.expiryDisplay,
+    provisionedAtIso: new Date(nowMs).toISOString(),
+  };
+}
+

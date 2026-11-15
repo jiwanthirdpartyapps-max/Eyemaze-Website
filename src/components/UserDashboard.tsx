@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Building2,
@@ -26,9 +26,13 @@ import {
   Code2,
   Database,
   LogOut,
+  ArrowUpRight,
 } from 'lucide-react';
 import { FirebaseIntegrationHub } from './FirebaseIntegrationHub';
 import { VirtualCardsStudio } from './VirtualCardsStudio';
+import { VirtualCard } from './VirtualCard';
+import { listUserVirtualCards } from '../firebase';
+import type { VirtualCardTokenized } from '../utils/virtualCardLogic';
 import type { UserProfile, WalletTransaction } from '../utils/dashboardLogic';
 import {
   getUserInitials,
@@ -80,6 +84,23 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
   const [fundAmountInput, setFundAmountInput] = useState('5000');
   const [fundPaymentMethod, setFundPaymentMethod] = useState('eSewa');
   const [copiedCode, setCopiedCode] = useState(false);
+  const [primaryCard, setPrimaryCard] = useState<VirtualCardTokenized | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    listUserVirtualCards(user.id)
+      .then((fetched) => {
+        if (!active) return;
+        setPrimaryCard(fetched[0] ?? null);
+      })
+      .catch(() => {
+        if (!active) return;
+        setPrimaryCard(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [user.id, activeTab]);
 
   // Quick Action Click Router
   const handleQuickAction = (tab: DashboardTab) => {
@@ -573,6 +594,94 @@ class MainActivity : AppCompatActivity() {
                     </span>
                   </button>
                 ))}
+              </div>
+            </section>
+
+            {/* VIRTUAL CARD BANKING SHOWCASE */}
+            <section
+              aria-label="Virtual Card"
+              className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-100 dark:border-slate-800 space-y-5"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-200">
+                    VIRTUAL CARD
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    {primaryCard
+                      ? 'Active tokenized debit card synced with your Eyemaze PCI Vault'
+                      : 'Interactive banking card preview — issue a Luhn-valid 3DS card to unlock full PAN & CVV'}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickAction('create-card')}
+                  className="min-h-[40px] px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#FF5B14] hover:bg-[#e04b08] transition-colors inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>{primaryCard ? 'Issue Another Card' : 'Issue 3DS Card'}</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div className="lg:col-span-6">
+                  <VirtualCard
+                    cardId={primaryCard?.id ?? 'dashboard-preview'}
+                    network={primaryCard?.network ?? 'VISA'}
+                    cardholderName={primaryCard?.cardholderName ?? user.name}
+                    maskedPan={primaryCard?.maskedPan}
+                    last4={primaryCard?.last4}
+                    expiryMonth={primaryCard?.expiryMonth}
+                    expiryYear={primaryCard?.expiryYear}
+                    status={primaryCard ? primaryCard.status : 'preview'}
+                    isLinkedVerified={primaryCard?.isLinkedVerified ?? false}
+                    spendingLimitUsd={primaryCard?.spendingLimitUsd}
+                  />
+                </div>
+
+                <div className="lg:col-span-6 space-y-4">
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1">
+                      <span className="text-slate-500 dark:text-slate-400 block">Card Holder</span>
+                      <span className="font-semibold text-slate-900 dark:text-white truncate block">
+                        {(primaryCard?.cardholderName || user.name || 'CARD HOLDER NAME').toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1">
+                      <span className="text-slate-500 dark:text-slate-400 block">Monthly Cap</span>
+                      <span className="font-mono tabular-nums font-semibold text-slate-900 dark:text-white block">
+                        ${(primaryCard?.spendingLimitUsd ?? 500).toLocaleString()} USD
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1">
+                      <span className="text-slate-500 dark:text-slate-400 block">3DS Security</span>
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400 block">
+                        EMV 3DS 2.2 · SCA
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1">
+                      <span className="text-slate-500 dark:text-slate-400 block">Mobile Pay</span>
+                      <span className="font-semibold text-slate-900 dark:text-white block">
+                        Apple &amp; Google Wallet
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Manage card freeze, Luhn link verification, and 3DS OTP challenges inside Card Vault.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('card-list')}
+                      className="min-h-[40px] px-4 py-2 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+                    >
+                      <span>Open Card Vault</span>
+                      <ArrowUpRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </section>
 

@@ -69,7 +69,7 @@ export const InteractiveProofStudio: React.FC = () => {
     {
       icon: <Truck className="w-5 h-5 text-sky-600" />,
       bg: 'bg-sky-50',
-      title: 'Fast Kathmandu & nationwide dispatch',
+      title: 'Fast मरिण–६, सिन्धुली & nationwide dispatch',
       desc: 'Tracked courier delivery straight to your office or event venue.',
     },
   ];
@@ -151,7 +151,7 @@ export const InteractiveProofStudio: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Aarav Shrestha</p>
-                  <p className="text-xs opacity-75">Creative Director · Kathmandu</p>
+                  <p className="text-xs opacity-75">Creative Director · मरिण–६, सिन्धुली</p>
                 </div>
                 <div className="mt-5 pt-4 border-t border-current/15 flex items-center justify-between text-[11px] font-mono opacity-80">
                   <span>{activePreset.coating}</span>
@@ -193,7 +193,7 @@ export const InteractiveProofStudio: React.FC = () => {
                 Engineered for tactile brand impact
               </h2>
               <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">
-                Every sheet, banner, and package passes strict ink-density and finishing inspection before leaving our Bagbazar facility.
+                Every sheet, banner, and package passes strict ink-density and finishing inspection before leaving our मरिण–६, छाप facility.
               </p>
             </div>
 

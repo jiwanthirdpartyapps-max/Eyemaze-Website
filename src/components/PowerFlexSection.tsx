@@ -42,7 +42,7 @@ export const PowerFlexSection: React.FC<PowerFlexSectionProps> = ({ onOpenPortal
     },
     {
       title: 'Doorstep Express Delivery',
-      desc: 'Same-day dispatch in Kathmandu valley & fast cargo across Nepal.',
+      desc: 'Same-day dispatch from मरिण–६, छाप, सिन्धुली & express cargo across Kathmandu and Nepal.',
       icon: <Truck className="w-5 h-5 text-sky-500" />,
       bg: 'bg-sky-50 dark:bg-sky-950/40',
     },

@@ -28,7 +28,7 @@ async function startServer() {
     try {
       const { prompt, projectType, budget, timeline } = req.body;
 
-      const systemInstruction = `You are the Senior Pre-Press Director and Print Consultant at Eyemaze Graphics Enterprises in Kathmandu, Nepal.
+      const systemInstruction = `You are the Senior Pre-Press Director and Print Consultant at Eyemaze Graphics Enterprises in Marin-6, Chhap, Sindhuli, Nepal (eyemaze.com.np).
       Eyemaze specializes in Offset & Bulk Printing, Flex & Vinyl Banners, Luxury Gold-Foil Stationery & Visiting Cards, Custom Packaging Boxes, Personalized Corporate Sets, Graphic Design, and Commercial Product Photography.
       Give concise, practical, non-generic technical advice covering exact paper GSM weights, lamination/foil finishes, CMYK color profiles, bleed margins, and estimated production turnaround in Nepal.`;
 
@@ -171,6 +171,16 @@ async function startServer() {
       dashboardUrl: 'https://ais-dev-kb5whbwhogqfr4ny7zic7a-474499258610.us-east1.run.app/#dashboard',
       supportedModes: ['Firebase Google Auth + Firestore', 'TWA (Trusted Web Activity)', 'WebView Hybrid'],
     });
+  });
+
+  // Public browser configuration for Google Maps JS API (HTTP-referrer restricted key)
+  app.get('/api/config/maps', (_req, res) => {
+    const apiKey =
+      process.env.VITE_GOOGLE_MAPS_API_KEY ||
+      process.env.GOOGLE_MAPS_API_KEY ||
+      process.env.GMP_API_KEY ||
+      '';
+    res.json({ apiKey });
   });
 
   // Vite development middleware

@@ -207,7 +207,7 @@ export const PRINT_FAQS: FaqItem[] = [
   },
   {
     question: 'How fast can you deliver visiting cards, stationery, and urgent flex banners?',
-    answer: 'Digital cards and flex banners can be produced within 24 to 48 hours on Express Rush. Standard offset visiting cards, letterheads, and brochures ship within 3 to 4 business days across Kathmandu Valley.',
+    answer: 'Digital cards and flex banners can be produced within 24 to 48 hours on Express Rush. Standard offset visiting cards, letterheads, and brochures ship within 3 to 4 business days from our मरिण–६, छाप, सिन्धुली press across Nepal.',
   },
   {
     question: 'Can I preview a digital or physical press proof before full bulk production?',

@@ -4,16 +4,16 @@ import { Bike, Truck, Plane, Zap, CheckCircle2, Globe2 } from 'lucide-react';
 export const NetworkTransferSection: React.FC = () => {
   const networks = [
     {
-      title: 'Local Valley Courier',
-      badge: 'LVC',
-      desc: 'Same-day motorcycle and rapid van dispatch across Kathmandu, Patan, and Bhaktapur.',
+      title: 'Local Marin, Chhap & Sindhuli Courier',
+      badge: 'LSC',
+      desc: 'Same-day local dispatch across मरिण–६, छाप, कल्पवृक्ष, सिन्धुलीमाडी, and direct highway transit to काठमाडौं & जनकपुर।',
       icon: <Bike className="w-5 h-5 text-indigo-500" />,
       bg: 'bg-indigo-50 dark:bg-indigo-950/40',
     },
     {
       title: 'Express Regional Cargo',
       badge: 'ERC',
-      desc: 'Next-day express parcel cargo routes connecting Pokhara, Chitwan, Butwal, and Biratnagar.',
+      desc: 'Next-day express parcel cargo routes connecting Kathmandu, Pokhara, Chitwan, Janakpur, and Biratnagar.',
       icon: <Truck className="w-5 h-5 text-emerald-500" />,
       bg: 'bg-emerald-50 dark:bg-emerald-950/40',
     },
@@ -38,7 +38,7 @@ export const NetworkTransferSection: React.FC = () => {
             Print & packaging logistics for growing brands
           </h2>
           <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-xl">
-            Distribute print runs across Kathmandu Valley & express cargo lines across all 7 provinces of Nepal.
+            Distribute print runs from मरिण–६, छाप, सिन्धुली across Bagmati, Madhesh, and express cargo lines serving all 7 provinces of Nepal.
           </p>
         </div>
 
@@ -114,22 +114,22 @@ export const NetworkTransferSection: React.FC = () => {
                   </linearGradient>
                 </defs>
 
-                {/* Origin Point: Kathmandu Press Studio */}
+                {/* Origin Point: Marin-6, Chhap, Sindhuli Press Studio */}
                 <circle cx="60" cy="140" r="7" fill="#F41D63" className="animate-pulse" />
                 <circle cx="60" cy="140" r="14" stroke="#F41D63" strokeWidth="1.5" opacity="0.4" />
                 <text x="60" y="165" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="bold" className="text-slate-800 dark:text-slate-200">
-                  Kathmandu HQ
+                  मरिण–६, छाप HQ
                 </text>
 
-                {/* Midpoints: Chitwan & Butwal */}
+                {/* Midpoints: Kathmandu & Chitwan */}
                 <circle cx="210" cy="55" r="5" fill="#FF5B14" />
                 <circle cx="310" cy="62" r="5" fill="#3B82F6" />
 
-                {/* Destination Point: Pokhara Hub */}
+                {/* Destination Point: Nationwide Hub */}
                 <circle cx="440" cy="100" r="7" fill="#FF5B14" className="animate-pulse" />
                 <circle cx="440" cy="100" r="16" stroke="#FF5B14" strokeWidth="2" opacity="0.4" />
                 <text x="440" y="125" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="bold" className="text-slate-800 dark:text-slate-200">
-                  Pokhara Branch
+                  Kathmandu Hub
                 </text>
               </svg>
             </div>
@@ -143,7 +143,7 @@ export const NetworkTransferSection: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                    Kathmandu → Pokhara
+                    मरिण–६, छाप → सिन्धुलीमाडी / काठमाडौं
                   </p>
                   <p className="text-xs font-bold text-slate-900 dark:text-white">
                     1,000 Offset Catalogs

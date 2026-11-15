@@ -42,7 +42,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
         <div className="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
           <img
             src="/src/assets/images/printing_press_hero_1794657251905.jpg"
-            alt="Heidelberg Speedmaster multi-color offset press in action at Eyemaze Kathmandu"
+            alt="Heidelberg Speedmaster multi-color offset press in action at Eyemaze मरिण–६, छाप, सिन्धुली"
             className={`w-full h-full object-cover transition-opacity duration-300 ${isPlaying ? 'opacity-90 scale-105 transition-transform duration-1000' : 'opacity-60'}`}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/40" />
@@ -113,7 +113,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div>
             <span className="text-slate-500 block text-[10px] uppercase font-bold">Facility Location</span>
-            <span className="text-white font-semibold">Bagbazar, Kathmandu</span>
+            <span className="text-white font-semibold">मरिण–६, छाप, सिन्धुली</span>
           </div>
         </div>
       </div>

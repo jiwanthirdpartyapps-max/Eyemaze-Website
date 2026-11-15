@@ -17,10 +17,11 @@ export const BrandStripAndTags: React.FC = () => {
   ];
 
   const regionsAndFormats = [
-    { name: 'Kathmandu Valley', badge: '🇳🇵', tag: 'HQ Hub' },
-    { name: 'Pokhara & Gandaki', badge: '🏔️', tag: 'Next Day' },
-    { name: 'Lalitpur & Patan', badge: '🏛️', tag: 'Same Day' },
-    { name: 'Bhaktapur Heritage', badge: '🏺', tag: 'Same Day' },
+    { name: 'मरिण–६, छाप, सिन्धुली', badge: '🇳🇵', tag: 'HQ Hub' },
+    { name: 'सिन्धुलीमाडी & कमलामाई', badge: '🏔️', tag: 'Same Day' },
+    { name: 'Kathmandu Valley', badge: '🏛️', tag: 'Daily Line' },
+    { name: 'Janakpur & Madhesh', badge: '🏺', tag: 'Same Day' },
+    { name: 'Pokhara & Gandaki', badge: '⛰️', tag: 'Next Day' },
     { name: 'Chitwan & Bharatpur', badge: '🦏', tag: 'Cargo Express' },
     { name: 'Butwal & Rupandehi', badge: '🏭', tag: 'Fast Line' },
     { name: 'Biratnagar & Morang', badge: '🏬', tag: 'Daily Freight' },
